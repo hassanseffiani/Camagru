@@ -11,12 +11,12 @@
         private $error;
         public function __construct(){
             $dsn = "mysql:host=$this->host; dbname=$this->dbname";
-            // $option = array(
-            //     PDO::ATTR_PERSISTENT => true,
-            //     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            // );
+            $option = array(
+                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            );
             try{
-                $this->pdo = new PDO($dsn, $this->user, $this->password);
+                $this->pdo = new PDO($dsn, $this->user, $this->password, $option);
             }catch(PDOException $e){
                 $this->error = $e->getMessage();
                 echo $this->error;

@@ -45,7 +45,6 @@
                                     <canvas id="canvas"><canvas>
                                 </div>
 
-                                <audio id="snap" src="http://wesbos.com/demos/photobooth/snap.mp3" hidden></audio>
                                 <div id="photo"></div>
                                 <input type="hidden" name="img64" id="img64">
                                 <input type="hidden" name="filter" id="filter">
@@ -82,7 +81,7 @@
                                     <div class="content" id="c_scroll">
                                         <table class="table is-fullwidth is-striped">
                                             <tbody>
-                                            <?foreach($data['img'] as $img):?>
+                                            <? foreach($data['img'] as $img) :?>
                                                 <tr>
                                                     <form action="<?php echo URLROOT;?>cameras/delete_preview/<?php echo $img->id; ?>" method="post">
                                                         <img src="data:<?php echo $img->type?>;base64,<?php echo $img->img?>" style="filter : <?php echo $img->filter?> ;" alt="image"/>
@@ -94,7 +93,7 @@
                                                     </form>
                                                     <br>
                                                 </tr>
-                                            <? endforeach;?>
+                                            <? endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>

@@ -16,8 +16,8 @@
         <a class="navbar-item" href="<?php echo URLROOT ;?>posts/post">
           <i class="fi-home"></i>
         </a>
-      <? endif;?>
-      </div>
+      <?php endif;?>
+    </div>
     <?php if(is_login_in()) :?>
         <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">

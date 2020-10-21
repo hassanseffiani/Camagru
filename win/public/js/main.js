@@ -30,11 +30,10 @@ var video = document.getElementById('video'),
 
 if (video){
 var canvas = document.getElementById('canvas'),
-audio = document.getElementById('snap'),
 ctx = canvas.getContext('2d');
 
 function getVideo() {
-  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+  navigator.mediaDevices.getUserMedia({ video: true })
   .then(localMediaStream => {      
     video.srcObject = localMediaStream;
     video.play();
@@ -66,13 +65,7 @@ function snap(){
     canvas.style.position = "absolute";
 }
 
-function sound(){
-  audio.currentime = 0;
-  audio.play();
-}
-
 function takephoto(){
-  sound();
   snap();
   img64.value = canvas.toDataURL().substring(22);
   filter_64.value = select_photo.value;
