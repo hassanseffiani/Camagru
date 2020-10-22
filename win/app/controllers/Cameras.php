@@ -6,7 +6,6 @@
         }
 
         /// index Camera
-
         public function index(){
             $img = $this->cameraModel->get_img($_SESSION['user_id']);
                 $data =[
@@ -14,8 +13,10 @@
                     'user_id' => $_SESSION['user_id'],
                     'img' => $img,
                     'img_err' => '',
-                    'is_in' => 0
+                    'is_in' => 0,
+                    'root' => get_all_stickers()
                 ];
+                // $data['root'] = get_all_stickers();
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     if (isset($_FILES['file']))
@@ -61,8 +62,8 @@
                         if ($this->postModel->addPost($data))
                             redirect('cameras');
                     }
-                }else
-                    $this->view('cameras/index', $data);
+                }
+                    // $this->view('cameras/index', $data);
         }
 
         /// Delete preview
@@ -75,6 +76,4 @@
             }
             redirect('cameras');
         }
-        
-        
     }

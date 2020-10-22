@@ -24,13 +24,17 @@
                     if (empty($data['email']))
                         $data['email_err'] = 'Enter a valid email';
                     else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
-                        $data['email_err'] = 'Enter a valid password';
+                        $data['email_err'] = 'Enter a valid email';
                     else{
                         if ($this->userModel->Check_email($data['email']))
                             $data['email_err'] = 'Email is already token';
                     }
                     if (empty($data['name']))
                         $data['name_err'] = 'Enter a valid name';
+                    else{
+                        if ($this->userModel->Check_name($data['name']))
+                            $data['name_err'] = 'Name is already token';
+                    }
                     if (empty($data['password']))
                         $data['password_err'] = 'Enter a valid password';
                     // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['password']) == false)
@@ -44,12 +48,30 @@
                     if (empty($data['email_err']) && empty($data['name_err']) && empty($data['password_err']) && empty($data['confirm_password_err'])){
                         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
                         if ($this->userModel->register($data)){
-                            $message = '<html><body><a href="'.URLROOT.'users/verify/'.$data['vkey'].'">Verify your account</a></body></html>';
+                            $message = "<html>
+                            <head>
+                              <title>Confirm Your account</title>
+                            </head>
+                            <body>
+                                <p>
+                                    Thanks for signing up!
+                                    Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
+                                
+                                    ------------------------
+                                    Username: ".$data['name']."
+                                    Password: ".trim($_POST['password'])."
+                                    ------------------------
+                                    
+                                    Please click this link to activate your account:
+                                </p>
+                                <a href='".URLROOT.'users/verify/'.$data['vkey']."'>Verify your account</a>
+                            </body>
+                            </html>";
                             verify($data['email'], $message);
                             redirect('users/login');
                         }
                         else
-                            die('Something is wrong');
+                            $this->view('users/index', $data);
                     }
                     else
                         $this->view('users/index', $data);
@@ -73,28 +95,101 @@
         public function verify($vkey = 0){
             if (empty($vkey))
                 redirect('posts');
-            if (!is_login_in()){
-                // $info = $this->userModel->getUserTime($vkey);
-                // foreach($info as $time);
-                $data = [
-                    'vkey' => $vkey,
-                    'vkey_err' => ''
-                    // 'time' => $time
-                ];
-                // var_dump($data['time']);
-                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-                    $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                    if (empty($data['vkey']))
-                        $data['vkey_err'] = "NOT GOOD";
+            $info = $this->userModel->getUserTime($vkey);
+            $data = [
+                'vkey' => $vkey,
+                'vkey_err' => '',
+                // 'now' => date("H:i:s"),00:20:25
+                // 'now' => date("2020-10-22 00:20:25"),
+                'now' => date("Y-m-d H:i:s"),
+                'time' => $info->time
+            ];
+            $toConvert = new DateTime($data['time']);
+            $strDate = $toConvert->format('Y-m-d H:i:s');
+            $date1 = date_create($date['now']);
+            $date2 = date_create($strDate);
+            $interval = date_diff($date2, $date1);
+            if($interval->format('%h%d%m%y')=="0000")
+                $min = $interval->format('%i');
+            else if($interval->format('%d%m%y')=="000")
+                $hh = $interval->format('%h');
+            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                if (empty($data['vkey']))
+                    $data['vkey_err'] = "NOT GOOD";
+                if (!$this->userModel->already_verify($vkey)){
                     if (empty($data['vkey_err'])){
-                        $this->userModel->verify1($data['vkey']);
-                        flash('register_success', 'You are registered and can log in');
+                        if ($hh == null){
+                            if ($min <= 5){
+                                if ($this->userModel->verify_account($data['vkey'])){
+                                    flash('register_success', 'You are registered and can log in');
+                                    redirect('users/login');
+                                }
+                            }else{
+                                flash('verify_failed', 'You have expire time to verify your account. Please send a new email');
+                                $this->view('users/send_N_email', $data);
+                            }
+                        }else{
+                            flash('verify_failed', 'You have expire time to verify your account');
+                            redirect('users/index');
+                        }
+                    }
+                }else{
+                    flash('register_success', 'You have already verify ur account');
+                    redirect('users/login');
+                }
+                
+            }else
+                $this->view('users/verify', $data);
+        }
+
+        //send a new email confirmation
+        //please modify created_at to cancell the tretment in verify function
+        //to contunie tommorrow
+        public function send_N_email(){
+            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                $vkey = $this->userModel->Get_vkey(trim($_POST['email']));
+                $data = [
+                    'email' => trim($_POST['email']),
+                    'vkey' => $vkey->vkey,
+                    'email_err' => ''
+                ];
+                if (empty($data['email']))
+                    $data['email_err'] = 'Enter a valid email';
+                else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
+                    $data['email_err'] = 'Enter a valid email';
+               
+                if (empty($data['email_err'])){
+                    if ($this->userModel->update_time($data['email'])){
+
+                        $message = "<html>
+                            <head>
+                                <title>Confirm Your account</title>
+                            </head>
+                            <body>
+                                <p>
+                                    Thanks for signing up!
+                                    Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
+                                
+                                    Please click this link to activate your account:
+                                </p>
+                                <a href='".URLROOT.'users/verify/'.$data['vkey']."'>Verify your account</a>
+                            </body>
+                            </html>";
+                        verify($data['email'], $message);
                         redirect('users/login');
                     }
-                }
-                $this->view('users/verify', $data);
-            }else
-                redirect('posts');
+                }else
+                    $this->view('users/send_N_email', $data);
+            }else{
+                $data = [
+                    'email' => '',
+                    'vkey' => '',
+                    'email_err' => ''
+                ];
+                $this->view('users/send_N_email', $data);
+            }
         }
 
         public function login_in($data){
@@ -102,6 +197,7 @@
                 $_SESSION['user_id'] = $data->id;
                 $_SESSION['user_email'] = $data->email;
                 $_SESSION['user_name'] = $data->name;
+                $_SESSION['test'] = $data->verify;
                 redirect('posts/post');
             }
         }
@@ -115,33 +211,44 @@
                         'password' => trim($_POST['password']),
                         'Username_err' => '',
                         'password_err' => '',
+                        'verify_err' => '',
                     ];
                     if (empty($data['Username']))
                         $data['Username_err'] = 'Enter a valid Username';
                     if (empty($data['password']))
                         $data['password_err'] = 'Enter a valid password';
-                    
-                    if ($this->userModel->Check_name($data['Username']));
+                    //check name
+                    $name = $this->userModel->Check_name($data['Username']);
+                    if ($name);
                     else
                         $data['Username_err'] = 'Username not found';
-                    $user_login = $this->userModel->login($data['Username'], $data['password']);
-                    if (empty($data['Username_err']) && empty($data['password_err'])){
-                        if ($user_login){
-                            $this->login_in($user_login);
+                    //verify
+                    $verify = $this->userModel->Check_verify($data['Username']);
+                    if ((int)$verify->verify){
+                        $user_login = $this->userModel->login($data['Username'], $data['password']);
+                        if (empty($data['Username_err']) && empty($data['password_err'])){
+                            if ($user_login)
+                                $this->login_in($user_login);
+                            else{
+                                $data['password_err'] = 'Password incorrect';
+                                $this->view('users/login', $data);
+                            }
                         }
-                        else{
-                            $data['password_err'] = 'Password incorrect';
+                        else
                             $this->view('users/login', $data);
-                        }
                     }
-                    else
+                    else{
+                        if ($name)
+                            $data['verify_err'] = 'Please verify your account';
                         $this->view('users/login', $data);
+                    }
                 }else{
                     $data = [
                         'Username' => '',
                         'password' => '',
                         'Username_err' => '',
                         'password_err' => '',
+                        'verify_err' => '',
                     ];
                     $this->view('users/login', $data);
                 }

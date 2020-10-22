@@ -6,7 +6,7 @@
     </div>
     <div class="columns is-centered">
         <form action="<?= URLROOT;?>users/verify/<?= $data['vkey']?>" method="post">
-                <input class="button is-primary" type="submit" name="submit" value="Verify"><a class="button" id="hidden">asd</a>
+                <input class="button is-primary" type="submit" name="submit" value="Verify">
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

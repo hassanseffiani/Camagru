@@ -27,6 +27,7 @@
                                             <option value="blur(10px)">Blur</option>
                                             <option value="contrast(200%)">Contrast</option>sepia(60%);
                                         </select>
+                                        <?php var_dump($data['root']);//echo foreach()?>
                                     </div>
                                 </div>
                                 <!-- <div class="column control">
