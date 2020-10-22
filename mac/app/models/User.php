@@ -13,11 +13,42 @@
         }
 
         public function getUserTime($vkey){
-            $this->db->query('SELECT current_time as time FROM Users WHERE vkey = :vkey');
+            // $this->db->query('SELECT DATE_FORMAT(created_at, "%H:%i:%s") as `time` FROM Users WHERE vkey = :vkey');
+            $this->db->query('SELECT created_at as `time` FROM Users WHERE vkey = :vkey');
             $this->db->bind(':vkey', $vkey);
             $this->db->execute();
             $rows = $this->db->single();
             return $rows;
+        }
+
+        public function already_verify($vkey){
+            $this->db->query('SELECT * FROM Users WHERE vkey = :vkey AND verify = 1');
+            $this->db->bind(':vkey', $vkey);
+            $rows = $this->db->single();
+            if ($this->db->rows() > 0)
+                return TRUE;
+            else
+                return FALSE;
+        }
+
+        public function Get_vkey($email){
+            $this->db->query('SELECT vkey FROM Users WHERE email = :email');
+            $this->db->bind(':email', $email);
+            $rows = $this->db->single();
+            if ($this->db->rows() > 0)
+                return $rows;
+            else
+                return FALSE;
+        }
+
+        public function update_time($email){
+            $this->db->query('UPDATE Users SET created_at = CURRENT_TIMESTAMP WHERE email = :email');
+            $this->db->bind(':email', $email);
+            $rows = $this->db->single();
+            if ($this->db->rows() > 0)
+                return $rows;
+            else
+                return FALSE;
         }
 
         public function register($data){
@@ -40,10 +71,9 @@
             if (password_verify($password, $hash_password))
                 return $rows;
             else
-                return FALSE;
+                return false;
         }
 
-       
         public function Check_email($email){
             $this->db->query('SELECT * FROM Users WHERE email = :email');
             $this->db->bind(':email', $email);
@@ -64,12 +94,12 @@
                 return FALSE;
         }
 
-        public function Check_verify($email){
-            $this->db->query('SELECT * FROM Users WHERE email = :email AND verify = 1');
-            $this->db->bind(':email', $email);
+        public function Check_verify($name){
+            $this->db->query('SELECT verify FROM Users WHERE name = :name');
+            $this->db->bind(':name', $name);
             $rows = $this->db->single();
             if ($this->db->rows() > 0)
-                return TRUE;
+                return $rows;
             else
                 return FALSE;
         }
@@ -82,8 +112,8 @@
 
         //verify
 
-        public function verify1($vkey){
-            $this->db->query('UPDATE Users SET `verify` = 1 WHERE verify = 0 AND vkey = :vkey');
+        public function verify_account($vkey){
+            $this->db->query('UPDATE Users SET `verify` = 1 WHERE vkey = :vkey');
             $this->db->bind(':vkey', $vkey);
             if ($this->db->execute())
                 return TRUE;

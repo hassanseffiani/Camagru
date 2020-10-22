@@ -13,56 +13,53 @@
                     'title' => 'Camera',
                     'user_id' => $_SESSION['user_id'],
                     'img' => $img,
-                    'img_err' => ''
+                    'img_err' => '',
+                    'is_in' => 0
                 ];
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                    if (isset($_FILES['file'])){
-                        $name_file = $_FILES['file']['name'];
-                        $imageFileType = strtolower(pathinfo($name_file,PATHINFO_EXTENSION));
-                        $tmp_name = $_FILES['file']['tmp_name'];
-                        $upload_directory = APPROOT1; //This is the folder which you created just now
-                        if (move_uploaded_file($tmp_name, $upload_directory.$name_file)){
-                            echo "0";
+                    if (isset($_FILES['file']))
+                        $data['is_in'] = 1;
+                    $name_file = $_FILES['file']['name'];
+                    $imageFileType = strtolower(pathinfo($name_file,PATHINFO_EXTENSION));
+                    $tmp_name = $_FILES['file']['tmp_name'];
+                    $upload_directory = APPROOT1; //This is the folder which you created just now
+                    if (move_uploaded_file($tmp_name, $upload_directory.$name_file)){
+                        $data1 = [
+                            'img_dir' => base64_encode(file_get_contents($upload_directory.$name_file)),
+                            'type' => getimagesize($upload_directory.$name_file),
+                            'filter' => trim($_POST['filter'])
+                        ];
+                        if ($data1['type'] !== false){
+                            if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "gif"){
+                                if ($_FILES["file"]["size"] < 500000){
+                                    $data = array_merge($data, $data1);
+                                    if ($this->postModel->addPost($data)){
+                                        echo "asd";
+                                        redirect('cameras');
+                                    }
+                                }else{
+                                    $data['img_err'] = 'Sorry, there was an error uploading your file.1';
+                                    $this->view('cameras/index', $data);
+                                }
+                            }
+                            else{
+                                $data['img_err'] = 'Sorry, there was an error uploading your file.2';
+                                $this->view('cameras/index', $data);
+                            }
+                        }else{
+                            $data['img_err'] = 'Sorry, there was an error uploading your file.3';
+                            $this->view('cameras/index', $data);
                         }
-                        var_dump($upload_directory);
-                        //     $data1 = [
-                        //         'img_dir' => base64_encode(file_get_contents($upload_directory.$name_file)),
-                        //         'type' => getimagesize($upload_directory.$name_file),
-                        //         'filter' => trim($_POST['filter'])
-                        //     ];
-                        //     var_dump($upload_directory.$name_file);
-                        //     if ($data1['type'] !== false){
-                        //         if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "gif"){
-                        //             if ($_FILES["file"]["size"] < 500000){
-                        //                 $data = array_merge($data, $data1);
-                        //                 if ($this->postModel->addPost($data)){
-                        //                     echo "asd";
-                        //                     redirect('cameras');
-                        //                 }
-                        //             }else{
-                        //                 $data['img_err'] = 'Sorry, there was an error uploading your file.';
-                        //                 $this->view('cameras/index', $data);
-                        //             }
-                        //         }
-                        //         else{
-                        //             $data['img_err'] = 'Sorry, there was an error uploading your file.';
-                        //             $this->view('cameras/index', $data);
-                        //         }
-                        //     }else{
-                        //         $data['img_err'] = 'Sorry, there was an error uploading your file.';
-                        //         $this->view('cameras/index', $data);
-                        //     }
-                        // }
-                        // else{
-                        //     $data1 = [
-                        //         'img_dir' => trim($_POST['img64']),
-                        //         'filter' => trim($_POST['filter'])
-                        //     ];
-                        //     $data = array_merge($data, $data1);
-                        //     if ($this->postModel->addPost($data))
-                        //         redirect('cameras');
-                        // }
+                    }
+                    else{
+                        $data1 = [
+                            'img_dir' => trim($_POST['img64']),
+                            'filter' => trim($_POST['filter'])
+                        ];
+                        $data = array_merge($data, $data1);
+                        if ($this->postModel->addPost($data))
+                            redirect('cameras');
                     }
                 }else
                     $this->view('cameras/index', $data);

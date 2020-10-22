@@ -11,15 +11,3 @@
     define('URLROOT','http://10.12.100.72/Camagru/');
     //sitename
     define('SITENAME','Camagru');
-
-    /// share to social media
-
-    /// time for kill verify page
-
-    // emoji in select
-
-    //forget password confirm email
-
-    ///image extention
-
-    /// sql injection xss attack

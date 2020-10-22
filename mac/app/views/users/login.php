@@ -7,18 +7,19 @@
     <div class="columns is-centered">
         <form action="<?php echo URLROOT;?>users/login" method="post" class="box">
             <?php echo flash('register_success');?>
+            <p class="help is-danger"><?= $data['verify_err'];?></p>
             <div class="field">
                 <label class="label">Username: <sup>*</sup></label>
                 <div class="control">
-                    <input class="input <?php echo (!empty($data['Username'])) ? 'is-success' : ''?>" type="text" name="email" placeholder="Username" value="<?php echo $data['Username']?>">
+                    <input class="input <?= (!empty($data['Username_err'])) ? 'is-danger' : ''?>" type="text" name="email" placeholder="Username" value="<?php echo $data['Username']?>">
                     <p class="help is-danger"><?php echo $data['Username_err']?></p>
                 </div>
             </div>
             <div class="field">
                 <label class="label">Password: <sup>*</sup></label>
                 <div class="control">
-                    <input class="input <?php echo (!empty($data['password'])) ? 'is-success' : ''?>" type="password" name="password" placeholder="Your_password" value="<?php echo $data['password']?>">
-                    <p class="help is-danger"><?php echo $data['password_err']?></p>
+                    <input class="input <?= (!empty($data['password_err'])) ? 'is-danger' : ''?>" type="password" name="password" placeholder="Your_password" value="<?php echo $data['password']?>">
+                    <p class="help is-danger"><?= $data['password_err'];?></p>
                 </div>
             </div>
             <div class="field">
