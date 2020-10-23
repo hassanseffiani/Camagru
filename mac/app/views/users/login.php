@@ -7,6 +7,7 @@
     <div class="columns is-centered">
         <form action="<?php echo URLROOT;?>users/login" method="post" class="box">
             <?php echo flash('register_success');?>
+            <?php echo flash('send_N_mail');?>
             <p class="help is-danger"><?= $data['verify_err'];?></p>
             <div class="field">
                 <label class="label">Username: <sup>*</sup></label>
@@ -23,14 +24,10 @@
                 </div>
             </div>
             <div class="field">
-                <!-- <label class="checkbox">
-                <input type="checkbox">
-                Remember me
-                </label> -->
                 <a href="<?php echo URLROOT;?>users/forget">Forget password ?</a>
             </div>
             <div class="buttons">
-                <input class="button is-primary" type="submit" name="submit" value="Login"><a class="button" id="hidden">asd</a>
+                <input class="button is-primary" type="submit" name="submit" value="Login">
                 <p>No account?  <a class="button is-info" href="<?php echo URLROOT;?>users/index">Sign up</a></p>
             </div>
         </form>

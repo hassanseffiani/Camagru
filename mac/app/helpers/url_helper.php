@@ -24,6 +24,18 @@
         $files = glob($file); //get all file names
         foreach($files as $file){
             if(is_file($file))
-            unlink($file); //delete file
+                unlink($file); //delete file
         }
+      }
+
+      //contunie to work with stickers next time
+      function get_all_stickers(){
+        $file = APPROOT2.'*';
+        $files = glob($file); //get all file names
+        $arr = array();
+        foreach($files as $file){
+            // if(is_file($file))
+                $arr = array_push($arr, $file); //get file
+        }
+        var_dump($arr);
       }
