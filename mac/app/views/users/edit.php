@@ -13,6 +13,15 @@
         </div>
     </div>
     <div class="columns is-centered">
+        <div class="field">
+            <label class="label">Notification :</label>
+            <div class="buttons has-addons">
+                <a class="button <?= ($data['notify'] === "0") ? 'is-success is-selected' : '' ?>" href="<?php echo URLROOT ;?>users/notify" onclick="<?= ($data['notify'] === "0") ? 'return false;' : '' ?>">Yes</a>
+                <a class="button <?= ($data['notify'] === "1") ? 'is-danger is-selected' : '' ?>" href="<?php echo URLROOT ;?>users/notify" onclick="<?= ($data['notify'] === "1") ? 'return false;' : '' ?>">No</a>
+            </div>
+        </div>
+    </div>
+    <div class="columns is-centered">
         <form action="<?php echo URLROOT;?>users/edit" method="post" class="box">
             <div class="field">
                 <label class="label">Name: <sup>*</sup></label>

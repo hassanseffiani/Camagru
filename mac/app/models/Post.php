@@ -53,13 +53,20 @@
             return $rows;
         }
 
-        public function getUserbyPostid($id){
-            $this->db->query('SELECT name FROM users INNER JOIN posts on users.id = posts.user_id WHERE posts.id = :id');
+        public function getUserEmailbyPostid($id){
+            $this->db->query('SELECT email FROM Users INNER JOIN Posts on Users.id = Posts.user_id WHERE Posts.id = :id');
             $this->db->bind(':id', $id);
             $rows = $this->db->single();
             return $rows;
         }
         
+        public function getUserNamebyPostid($id){
+            $this->db->query('SELECT name FROM Users INNER JOIN Posts on Users.id = Posts.user_id WHERE Posts.id = :id');
+            $this->db->bind(':id', $id);
+            $rows = $this->db->single();
+            return $rows;
+        }
+
         public function deletePost($id){
             $this->db->query('DELETE FROM Posts WHERE id = :id AND user_id = :user_id');
             $this->db->bind(':id', $id);
@@ -151,4 +158,13 @@
             $rows = $this->db->single();
             return $rows;
         }
+
+        // set setup
+
+        // public function model_setup(){
+        //     $this->db->query("CREATE DATABASE if not exists myDB");
+        //     $this->db->execute();
+        //     $this->db->query("CREATE TABLE Users(`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,`email` VARCHAR(255) NOT NULL)");
+        //     $this->db->execute();
+        // }
     }

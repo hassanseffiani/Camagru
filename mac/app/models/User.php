@@ -205,4 +205,35 @@
                 return FALSE;
         }
 
+        //notify
+
+        public function modelNotify($id){
+            $this->db->query('UPDATE Users SET `notify` = 1 WHERE id = :id');
+            $this->db->bind(':id', $id);
+            if ($this->db->execute())
+                return TRUE;
+            else
+                return FALSE;
+        }
+
+        public function modelNotify1($id){
+            $this->db->query('UPDATE Users SET `notify` = 0 WHERE id = :id');
+            $this->db->bind(':id', $id);
+            if ($this->db->execute())
+                return TRUE;
+            else
+                return FALSE;
+        }
+
+        //see notify column
+
+        public function notifyResult($id){
+            $this->db->query('SELECT notify FROM Users WHERE id = :id');
+            $this->db->bind(':id', $id);
+            $rows = $this->db->single();
+            if ($this->db->rows() > 0)
+                return $rows;
+            else
+                return FALSE;
+        }
     }

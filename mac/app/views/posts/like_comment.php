@@ -117,7 +117,7 @@
             p = p.substring(6);
             var elem_dlt = document.getElementById("elem_to_dlt"+j);
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost/Camagru/posts/delete_comment/"+id, true);
+            xhr.open("POST", "http://10.12.100.72/Camagru/posts/delete_comment/"+id, true);
             xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             xhr.onload = function(){
                 if (this.responseText != 1){

@@ -152,7 +152,7 @@
       var p = document.getElementById('like_p'+j).innerHTML;
       p = p.substring(6);
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", "http://localhost/Camagru/posts/add_like/"+id, true);
+      xhr.open("GET", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
       xhr.onload = function(){
           var r = +p + +this.responseText;
           p0.innerHTML = "&nbsp" + r;
@@ -172,7 +172,7 @@
       var comment = document.getElementById('comment_text'+j).value;
       var params = "comment="+comment;
       var xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://localhost/Camagru/posts/add_comment/"+id, true);
+      xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_comment/"+id, true);
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.onload = function(){
         if (this.responseText){

@@ -1,4 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Set a setup with help of ajax
+
+
+  //wait if last setup id done correctly
+  //////////////////////////////////////////////////////////////////////////
+
+  // var xhr = new XMLHttpRequest();
+  // xhr.open("GET", "http://10.12.100.72/Camagru/", true);
+  // xhr.onload = function(){
+
+  //   }
+  // xhr.send();
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   // Get all "navbar-burger" elements
   const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
   // Check if there are any navbar burgers
@@ -18,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 ////webcam
+
+//All glob variable have the same type var
 var video = document.getElementById('video'),
     photo = document.getElementById('photo'),
     select_photo = document.getElementById("photo-filter"),
@@ -29,36 +45,38 @@ var video = document.getElementById('video'),
     title_filter = document.getElementById('title_filter');;
 
 if (video){
-var canvas = document.getElementById('canvas'),
-ctx = canvas.getContext('2d');
+  var canvas = document.getElementById('canvas'),
+  ctx = canvas.getContext('2d');
 
-function getVideo() {
-  navigator.mediaDevices.getUserMedia({ video: true })
-  .then(localMediaStream => {      
-    video.srcObject = localMediaStream;
-    video.play();
-  }).catch(err => console.error(err));
-}
+  function getVideo() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(localMediaStream => {      
+      video.srcObject = localMediaStream;
+      video.play();
+    }).catch(err => console.error(err));
+  }
 
-///filter
+  ///filter
 
-if (select_photo.options[0].value == ""){
-  input.disabled = true;
-  take.disabled = true;
-}
+  if (select_photo.options[0].value == ""){
+    // input.disabled = true;
+    // take.disabled = true;
+  }
 
-function ch_filter(){
-  video.style.filter = select_photo.value;
-  take.disabled = false;
-  input.disabled = false;
-  title_filter.innerHTML = "";
-  getVideo()
-  make_base();
-}
+  function ch_filter(){
+    video.style.filter = select_photo.value;
+    take.disabled = false;
+    input.disabled = false;
+    title_filter.innerHTML = "";
+    getVideo()
+    // make_base();
+    //to update this method by the old git plz
+  }
 
 function snap(){
     canvas.width = video.clientWidth;;
     canvas.height = video.clientHeight;
+    // check for the outility ctx.filter ...
     // ctx.filter =  select_photo.value;
     ctx.drawImage(video, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
     canvas.style.visibility = "hidden";
@@ -67,20 +85,25 @@ function snap(){
 
 function takephoto(){
   snap();
+  //input hidden
   img64.value = canvas.toDataURL().substring(22);
   filter_64.value = select_photo.value;
 }
 
-function make_base()
-{
-  base_image = new Image();
-  base_image.src = "https://w0.pngwave.com/png/752/702/emoji-sticker-smirk-text-messaging-emoticon-emoji-hike-png-clip-art.png";
-  ctx.drawImage(base_image, 100, 100);
-}
+
+/// check the old code git it.
+
+// function make_base()
+// {
+//   base_image = new Image();
+//   base_image.src = "https://w0.pngwave.com/png/752/702/emoji-sticker-smirk-text-messaging-emoticon-emoji-hike-png-clip-art.png";
+//   ctx.drawImage(base_image, 100, 100);
+// }
 
 // getVideo();
 }
 
+//display input image
 
 function display(input) {
   if (input.files && input.files[0]) {
@@ -108,10 +131,6 @@ function ch(){
   display_vedio.style.display = "none";
   display(input);
 }
-
-// pagination
-
-
 
 /// display like && comment
 
@@ -157,7 +176,7 @@ function display_comment_post(j){
 function like_ajax(id,j){
   var request = new XMLHttpRequest();
     // Instantiating the request object
-    request.open("GET", "http://localhost/Camagru/posts/add_like/" + id);
+    request.open("GET", "http://10.12.100.72/Camagru/posts/add_like/" + id);
     // Defining event listener for readystatechange event
     request.onreadystatechange = function() {
         // Check if the request is compete and was successful
@@ -184,7 +203,7 @@ function dlt_f_ajax(id, j){
   p = p.substring(6);
   var elem_dlt = document.getElementById("elem_to_dlt"+j);
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "http://localhost/Camagru/posts/delete_comment/"+id, true);
+  xhr.open("POST", "http://10.12.100.72/Camagru/posts/delete_comment/"+id, true);
   xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   xhr.onload = function(){
     if (this.responseText != 1){

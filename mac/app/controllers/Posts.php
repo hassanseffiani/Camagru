@@ -9,6 +9,8 @@
         /// Index For all POST
 
         public function index($page = 0){
+            // $n = $this->userModel->notifyResult($_SESSION['user_id']);
+            // var_dump($n);
             $rpp = 5;
             isset($page) ? $page = $page : $page = 0;
             if ($page > 1)
@@ -45,6 +47,7 @@
             $this->view('posts/index', $data);
         }
 
+        // to delete all unnessassary tof 
         
         public function delete_all($id){
             $this->cameraModel->delete_all($id);
@@ -70,6 +73,8 @@
             $this->view('posts/show', $data);
         }
 
+        // dlt a post
+
         public function delete($id){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $post = $this->userModel->getUserbyid($id);
@@ -88,6 +93,7 @@
                 redirect('posts');
             }
         }
+
         //// likes
 
         public function like($id){
@@ -107,17 +113,42 @@
                 $like = $this->postModel->get_like($id);
                 $post = $this->postModel->getPostbyid($id);
                 $user = $this->userModel->getUserbyid($_SESSION['user_id']);
+                $userPost = $this->postModel->getUserEmailbyPostid($id);
+                $n = $this->userModel->notifyResult($_SESSION['user_id']);
                 $data = [
                     'user' => $user,
                     'post' => $post,
                 ];
                 if (!$like){
                     $this->postModel->sql_like($data);
-                    verify($_SESSION['user_email'], "You like a post");
+                    $message = "<html>
+                            <head>
+                                <title>Notif like</title>
+                            </head>
+                            <body>
+                                <p>
+                                    You just receive a like
+                                </p>
+                            </body>
+                            </html>";
+                    if ($n->notify === "0")
+                        verify($userPost->email, $message);
                     echo 1;
                 }
                 else{
                     $this->postModel->delete_like($data);
+                    $message = "<html>
+                            <head>
+                                <title>Notif like</title>
+                            </head>
+                            <body>
+                                <p>
+                                    You just receive a delike
+                                </p>
+                            </body>
+                            </html>";
+                    if ($n->notify === "0")
+                        verify($userPost->email, $message);
                     echo -1;
                 }
             }
@@ -144,6 +175,8 @@
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $post = $this->postModel->getPostbyid($id);
                     $user = $this->userModel->getUserbyid($_SESSION['user_id']);
+                    $userPost = $this->postModel->getUserEmailbyPostid($id);
+                    $n = $this->userModel->notifyResult($_SESSION['user_id']);
                     $data = [
                         'user' => $user,
                         'post' => $post,
@@ -153,8 +186,21 @@
                     if (empty($data['comment']))
                         $data['comment_err'] = "Write something for this post.";
                     if (empty($data['comment_err'])){
-                        if ($this->postModel->sql_comment($data))
+                        if ($this->postModel->sql_comment($data)){
+                            $message = "<html>
+                            <head>
+                                <title>Notif like</title>
+                            </head>
+                            <body>
+                                <p>
+                                    You just receive a comment
+                                </p>
+                            </body>
+                            </html>";
+                            if ($n->notify === "0")
+                                verify($userPost->email, $message);
                             redirect('posts');
+                        }
                     }else
                         redirect('posts');}
             }else
@@ -176,17 +222,17 @@
             $cnt_comment = $this->postModel->count_comment($id);
             $like = $this->postModel->get_like_all($id);
             $post = $this->postModel->getPostbyid($id);
-            $user = $this->userModel->getUserbyid($_SESSION['user_id']);
+            $userPost = $this->postModel->getUserNamebyPostid($id);
+            // $user = $this->userModel->getUserbyid($_SESSION['user_id']);
             $comment = $this->postModel->get_comment($id);
             $data = [
-                'user' => $user,
+                'user' => $userPost,
                 'post' => $post,
                 'like' => $like,
                 'list' => $comment,
                 'cnt_like' => $cnt_like,
                 'cnt_comment' => $cnt_comment,
             ];
-            // var_dump($data);
             $_SESSION['post_id'] = $id;
             $this->view('posts/like_comment', $data);
         }
