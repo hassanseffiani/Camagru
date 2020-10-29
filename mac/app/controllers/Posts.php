@@ -47,35 +47,9 @@
             $this->view('posts/index', $data);
         }
 
-        // to delete all unnessassary tof 
-        
-        public function delete_all($id){
-            $this->cameraModel->delete_all($id);
-            $file = APPROOT1.'*';
-            $files = glob($file); //get all file names
-            foreach($files as $file){
-                if(is_file($file))
-                unlink($file); //delete file
-            }
-            flash('dlt_file','File delete succes');
-            redirect('posts');
-        }
-
-        /// Show detail Post
-
-        public function show($id){
-            $post = $this->postModel->getPostbyid($id);
-            $user = $this->userModel->getUserbyid($post->user_id);
-            $data = [
-                'user' => $user,
-                'post' => $post
-            ];
-            $this->view('posts/show', $data);
-        }
-
         // dlt a post
 
-        public function delete($id){
+        public function delete($id = 0){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $post = $this->userModel->getUserbyid($id);
                 if ($post->user_id != $_SESSION['id'])
@@ -108,68 +82,30 @@
             $this->view('posts/like', $data);
         }
 
-        public function add_like($id){
+        public function add_like($id = 0){
             if (is_login_in()){
                 $like = $this->postModel->get_like($id);
                 $post = $this->postModel->getPostbyid($id);
                 $user = $this->userModel->getUserbyid($_SESSION['user_id']);
-                $userPost = $this->postModel->getUserEmailbyPostid($id);
-                $n = $this->userModel->notifyResult($_SESSION['user_id']);
                 $data = [
                     'user' => $user,
                     'post' => $post,
                 ];
                 if (!$like){
                     $this->postModel->sql_like($data);
-                    $message = "<html>
-                            <head>
-                                <title>Notif like</title>
-                            </head>
-                            <body>
-                                <p>
-                                    You just receive a like
-                                </p>
-                            </body>
-                            </html>";
-                    if ($n->notify === "0")
-                        verify($userPost->email, $message);
                     echo 1;
                 }
                 else{
                     $this->postModel->delete_like($data);
-                    $message = "<html>
-                            <head>
-                                <title>Notif like</title>
-                            </head>
-                            <body>
-                                <p>
-                                    You just receive a delike
-                                </p>
-                            </body>
-                            </html>";
-                    if ($n->notify === "0")
-                        verify($userPost->email, $message);
                     echo -1;
                 }
             }
+            redirect('posts');
         }
 
         //// Comments
 
-        public function comment($id){
-            $post = $this->postModel->getPostbyid($id);
-            $comment = $this->postModel->get_comment($id);
-            $user = $this->userModel->getUserbyid($_SESSION['user_id']);
-            $data = [
-                'user' => $user,
-                'post' => $post,
-                'list' => $comment
-            ];
-            $_SESSION['post_id'] = $id;
-            $this->view('posts/comment', $data);
-        }
-
-        public function add_comment($id){
+        public function add_comment($id = 0){
             if (is_login_in()){
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -201,18 +137,20 @@
                                 verify($userPost->email, $message);
                             redirect('posts');
                         }
-                    }else
-                        redirect('posts');}
-            }else
-                redirect('post');
+                    }
+                }
+                redirect('posts');
+            }
+            redirect('users/login');
         }
 
-        public function delete_comment($id){
+        public function delete_comment($id = 0){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $this->postModel->delete_comment_sql($id);
                 redirect('posts/like_comment/'.$_SESSION['post_id']);
                 $_SESSION['post_id'] = "";
             }
+            redirect('posts');
         }
 
         // like comment

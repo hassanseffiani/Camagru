@@ -455,8 +455,8 @@
                     }
                     if (empty($data['new_p']))
                         $data['new_p_err'] = "Enter a valid password";
-                    else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
-                        $data['new_p_err'] = 'Enter a valid password';
+                    // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
+                        // $data['new_p_err'] = 'Enter a valid password';
                     else if ($data['new_p'] == $data['old_p'])
                         $data['new_p_err'] = "Enter another password";
                     if (empty($data['con_p']))
