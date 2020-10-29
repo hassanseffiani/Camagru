@@ -14,29 +14,15 @@
     </div>
     <div class="columns is-centered">
         <form action="<?php echo URLROOT;?>users/forget" method="post" class="box">
+            <?php echo flash('pass_err');?>
             <div class="field">
-                <label class="label">Email: <sup>*</sup></label>
-                <div class="control">
-                    <input class="input <?php echo (!empty($data['email'])) ? 'is-success' : ''?>" type="text" name="email" placeholder="Your_email" value="<?php echo $data['email']?>">
-                    <p class="help is-danger"><?php echo $data['email_err']?></p>
+                    <label class="label">Email: <sup>*</sup></label>
+                    <div class="control">
+                        <input class="input <?= (!empty($data['email_err'])) ? 'is-danger' : ''?>" type="text" name="email" placeholder="Your_email@gmail.com" value="<?php echo $data['email']?>">
+                        <p class="help is-danger"><?php echo $data['email_err']?></p>
+                    </div>
                 </div>
-            </div>
-            <div class="field">
-                <!-- <label class="label">New password: <sup>*</sup></label>
-                <div class="control">
-                    <input class="input <?php echo (!empty($data['new_p'])) ? 'is-success' : ''?>" type="password" name="new_p" placeholder="Your_password" value="<?php echo $data['new_p']?>">
-                    <p class="help is-danger"><?php echo $data['new_p_err']?></p>
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Confirm password: <sup>*</sup></label>
-                <div class="control">
-                    <input class="input <?php echo (!empty($data['con_p'])) ? 'is-success' : ''?>" type="password" name="con_p" placeholder="Your_password" value="<?php echo $data['con_p']?>">
-                    <p class="help is-danger"><?php echo $data['con_p_err']?></p>
-                </div>
-            
-            <div class="buttons column is-half"> -->
-            <input class="button is-primary" type="submit" name="submit" value="Edit"><a class="button" id="hidden">asdasdasdaasdasdasdasdsd</a>
+            <input class="button is-primary" type="submit" name="submit" value="Edit"><a class="button" id="hidden">asdasdasdaasdas</a>
             </div>
         </form>
     </div>

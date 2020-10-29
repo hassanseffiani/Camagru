@@ -5,6 +5,8 @@
             $this->userModel = $this->model('User');
         }
 
+        //Sign up || or create user
+
         public function index(){
             if (!is_login_in()){
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -23,12 +25,10 @@
                     ];
                     if (empty($data['email']))
                         $data['email_err'] = 'Enter a valid email';
+                    else if (!$this->userModel->Check_email($data['email']))
+                        $data['email_err'] = 'Email not found';
                     else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
                         $data['email_err'] = 'Enter a valid email';
-                    else{
-                        if ($this->userModel->Check_email($data['email']))
-                            $data['email_err'] = 'Email is already token';
-                    }
                     if (empty($data['name']))
                         $data['name_err'] = 'Enter a valid name';
                     else{
@@ -92,6 +92,8 @@
                 redirect('posts');
         }
 
+        //to verify account just created
+
         public function verify($vkey = 0){
             if (empty($vkey))
                 redirect('posts');
@@ -99,16 +101,12 @@
             $data = [
                 'vkey' => $vkey,
                 'vkey_err' => '',
-                // 'now' => date("H:i:s"),00:20:25
-                // 'now' => date("2020-10-22 00:20:25"),
                 'now' => date("Y-m-d H:i:s"),
                 'time' => $info->time
             ];
             $toConvert = new DateTime($data['time']);
             $strDate = $toConvert->format('Y-m-d H:i:s');
-            $date1 = date_create($date['now']);
-            $date2 = date_create($strDate);
-            $interval = date_diff($date2, $date1);
+            $interval = date_diff(date_create($strDate), date_create($data['now']));
             if($interval->format('%h%d%m%y')=="0000")
                 $min = $interval->format('%i');
             else if($interval->format('%d%m%y')=="000")
@@ -131,7 +129,7 @@
                             }
                         }else{
                             flash('verify_failed', 'You have expire time to verify your account');
-                            redirect('users/index');
+                            $this->view('users/send_N_email', $data);
                         }
                     }
                 }else{
@@ -143,9 +141,8 @@
                 $this->view('users/verify', $data);
         }
 
-        //send a new email confirmation
-        //please modify created_at to cancell the tretment in verify function
-        //to contunie tommorrow
+        //send a new email confirmation if this is timeout for verification
+
         public function send_N_email(){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -157,12 +154,12 @@
                 ];
                 if (empty($data['email']))
                     $data['email_err'] = 'Enter a valid email';
+                else if (!$this->userModel->Check_email($data['email']))
+                    $data['email_err'] = 'Email not found';
                 else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
                     $data['email_err'] = 'Enter a valid email';
-               
                 if (empty($data['email_err'])){
                     if ($this->userModel->update_time($data['email'])){
-
                         $message = "<html>
                             <head>
                                 <title>Confirm Your account</title>
@@ -178,6 +175,7 @@
                             </body>
                             </html>";
                         verify($data['email'], $message);
+                        flash('send_N_mail', 'Check your inbox for the new verification');
                         redirect('users/login');
                     }
                 }else
@@ -192,6 +190,118 @@
             }
         }
 
+        ///forget
+        // if user forget his password
+
+        public function forget(){
+            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                $vkey = $this->userModel->Get_vkey(trim($_POST['email']));
+                $data = [
+                    'email' => trim($_POST['email']),
+                    'vkey' => $vkey->vkey,
+                    'email_err' => ''
+                ];
+                if (empty($data['email']))
+                    $data['email_err'] = 'Enter a valid email';
+                else if (!$this->userModel->Check_email($data['email']))
+                    $data['email_err'] = 'Email not found';
+                else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
+                    $data['email_err'] = 'Enter a valid email';
+                
+                if (empty($data['email_err'])){
+                    if ($this->userModel->update_time($data['email'])){
+                        $message = "<html>
+                            <head>
+                                <title>Change password</title>
+                            </head>
+                            <body>
+                                <p>
+                                    Please click this link to change your passwrod account:
+                                </p>
+                                <a href='".URLROOT.'users/verify_forget/'.$data['vkey']."'>Verify your account</a>
+                            </body>
+                            </html>";
+                        verify($data['email'], $message);
+                        flash('verify_forget', 'Your password is changed success.');
+                        redirect('users/login');
+                    }
+                }else
+                    $this->view('users/forget', $data);
+            }else
+                $this->view('users/forget', $data);
+        }
+
+        // Change forget password
+
+        public function verify_forget($vkey = 0){
+            if (empty($vkey))
+                redirect('posts');
+            $info = $this->userModel->getUserTime($vkey);
+            $data1 = [
+                'now' => date("Y-m-d H:i:s"),
+                'time' => $info->time
+            ];
+            $toConvert = new DateTime($data1['time']);
+            $strDate = $toConvert->format('Y-m-d H:i:s');
+            $interval = date_diff(date_create($strDate), date_create($data1['now']));
+            if($interval->format('%h%d%m%y')=="0000")
+                $min = $interval->format('%i');
+            else if($interval->format('%d%m%y')=="000")
+                $hh = $interval->format('%h');
+            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                $data = [
+                    'vkey' => $vkey,
+                    'old_p' => trim($_POST['old_p']),
+                    'new_p' => trim($_POST['new_p']),
+                    'con_p' => trim($_POST['con_p']),
+                    'vkey_err' => '',
+                    'old_p_err' => '',
+                    'new_p_err' => '',
+                    'con_p_err' => '',
+                ];
+                if (empty($data['old_p']))
+                    $data['old_p_err'] = "Enter a valid password";
+                else{
+                    if (!$this->userModel->Check_password2($data))
+                        $data['old_p_err'] = "Enter your old password";
+                }
+                if (empty($data['new_p']))
+                    $data['new_p_err'] = "Enter a valid password";
+                // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
+                    // $data['new_p_err'] = 'Enter a valid password';
+                else if ($data['new_p'] == $data['old_p'])
+                    $data['new_p_err'] = "Enter another password";
+                if (empty($data['con_p']))
+                    $data['con_p_err'] = "Confirm your password";
+                else if ($data['new_p'] != $data['con_p'])
+                    $data['con_p_err'] = "Confirm your password";
+                if (empty($data['old_p_err']) && empty($data['new_p_err']) && empty($data['con_p_err'])){
+                    $data['new_p'] = password_hash($data['new_p'], PASSWORD_DEFAULT);
+                    if ($hh == null){
+                        if ($min <= 5){
+                            if ($this->userModel->verify_forget($data)){
+                                flash('register_success', 'Your password has changed correctly');
+                                redirect('users/login');
+                            }
+                        }else{
+                            flash('pass_err', 'You have expire time to modify your password your account. Please send a new email');
+                            $this->view('users/forget', $data);
+                        }
+                    }else{
+                        flash('pass_err', 'You have expire time to modify your password your account. Please send a new email');
+                        $this->view('users/forget', $data);
+                    }
+                }else
+                    $this->view('users/verify_forget', $data);
+            }
+            else
+                $this->view('users/verify_forget', $data);
+        }
+
+        // Save all necessary session
+
         public function login_in($data){
             if (!empty($data)){
                 $_SESSION['user_id'] = $data->id;
@@ -201,6 +311,8 @@
                 redirect('posts/post');
             }
         }
+
+        // login
 
         public function login(){
             if (!is_login_in()){
@@ -256,13 +368,7 @@
                 redirect('posts');
         }
 
-        public function logout(){
-            $_SESSION['user_id'] = '';
-            $_SESSION['user_email'] = '';
-            $_SESSION['user_name'] = '';
-            session_destroy();
-            redirect('users/login');
-        }
+        //edit user profil
 
         public function edit(){
             if (is_login_in()){
@@ -322,6 +428,8 @@
             $this->view('users/login', $data);
         }
 
+        // Edit password user log in
+        
         public function edit_pass(){
             if (is_login_in()){
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -373,101 +481,13 @@
             $this->view('users/login', $data);
         }
 
+        //logout
 
-        public function forget(){
-            if (!is_login_in()){
-                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-                    $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                    $vkey = 
-                    $data = [
-                        'email' => trim($_POST['email']),
-                        'new_p' => trim($_POST['new_p']),
-                        'con_p' => trim($_POST['con_p']),
-                        'email_err' => '',
-                        'new_p_err' => '',
-                        'con_p_err' => '',
-                    ];
-                    if (empty($data['email']))
-                        $data['email_err'] = "Enter a valid password";
-                    // if (empty($data['new_p']))
-                    //     $data['new_p_err'] = "Enter a valid password";
-                    // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
-                    //     $data['new_p_err'] = 'Enter a valid password';
-                    // else{
-                    //     if ($this->userModel->Check_password1($data))
-                    //         $data['new_p_err'] = "Enter another password";
-                    // }
-                    if ($this->userModel->Check_email($data['email']));
-                    else
-                        $data['email_err'] = 'Email not found';
-                    // if (empty($data['con_p']))
-                    //     $data['con_p_err'] = "Enter a valid password";
-                    // else if ($data['con_p'] != $data['new_p'])
-                    //     $data['con_p_err'] = "Please confirm your password"; 
-                    if (empty($data['email_err']) && empty($data['new_p_err']) && empty($data['con_p_err'])){
-                        $data['new_p'] = password_hash($data['new_p'], PASSWORD_DEFAULT);
-                        // if ($this->userModel->edit_password($data)){
-                            //verify email
-                        // if ($this->useModel->verify_forget($data)){
-                            // $message = '<html><body><a href="'.URLROOT.'users/verify_forget/'.$data['vkey'].'">Verify your account</a></body></html>';
-                            // verify($data['email'], $message);
-                            // flash('edit_pass_success', 'Infos edited.');
-                            redirect('users/login');
-                        // }
-                    }
-                    $this->view('users/forget', $data);
-                }else{
-                    $data = [
-                        'email' => '',
-                        'new_p' => '',
-                        'con_p' => '',
-                        'email_err' => '',
-                        'new_p_err' => '',
-                        'con_p_err' => '',
-                    ];
-                    $this->view('users/forget', $data);
-                }
-            }else
-            redirect('posts/index');
-        }
-        
-        public function verify_forget($vkey = 0){
-            if (empty($vkey))
-                redirect('posts');
-            if (!is_login_in()){
-                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-                $data = [
-                    'new_p' => trim($_POST['new_p']),
-                    'con_p' => trim($_POST['con_p']),
-                    'new_p_err' => '',
-                    'con_p_err' => '',
-                    'vkey' => $vkey,
-                    'vkey_err' => ''
-                    // 'time' => $time
-                ];
-                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                if (empty($data['vkey']))
-                    $data['vkey_err'] = "NOT GOOD";
-                // if (empty($data['vkey_err'])){
-                    // $this->userModel->verify1($data['vkey']);
-                    // flash('register_success', 'You are registered and can log in');
-                    // redirect('users/login');
-                // }
-                }else{
-                    $data = [
-                        'new_p' => '',
-                        'con_p' => '',
-                        'new_p_err' => '',
-                        'con_p_err' => '',
-                    ];
-                    $this->view('users/verify_forget', $data);
-                }
-                // $info = $this->userModel->getUserTime($vkey);
-                // foreach($info as $time);
-                
-                // var_dump($data['time']);
-                    
-            }else
-                redirect('posts');
+        public function logout(){
+            $_SESSION['user_id'] = '';
+            $_SESSION['user_email'] = '';
+            $_SESSION['user_name'] = '';
+            session_destroy();
+            redirect('users/login');
         }
     }

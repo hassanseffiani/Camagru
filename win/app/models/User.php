@@ -12,41 +12,11 @@
             return $rows;
         }
 
-        public function getUserTime($vkey){
-            // $this->db->query('SELECT DATE_FORMAT(created_at, "%H:%i:%s") as `time` FROM Users WHERE vkey = :vkey');
-            $this->db->query('SELECT created_at as `time` FROM Users WHERE vkey = :vkey');
-            $this->db->bind(':vkey', $vkey);
-            $this->db->execute();
-            $rows = $this->db->single();
-            return $rows;
-        }
-
-        public function already_verify($vkey){
-            $this->db->query('SELECT * FROM Users WHERE vkey = :vkey AND verify = 1');
-            $this->db->bind(':vkey', $vkey);
-            $rows = $this->db->single();
-            if ($this->db->rows() > 0)
-                return TRUE;
-            else
-                return FALSE;
-        }
-
-        public function Get_vkey($email){
-            $this->db->query('SELECT vkey FROM Users WHERE email = :email');
-            $this->db->bind(':email', $email);
-            $rows = $this->db->single();
-            if ($this->db->rows() > 0)
-                return $rows;
-            else
-                return FALSE;
-        }
-
         public function update_time($email){
             $this->db->query('UPDATE Users SET created_at = CURRENT_TIMESTAMP WHERE email = :email');
             $this->db->bind(':email', $email);
-            $rows = $this->db->single();
-            if ($this->db->rows() > 0)
-                return $rows;
+            if ($this->db->execute())
+                return TRUE;
             else
                 return FALSE;
         }
@@ -62,7 +32,9 @@
             else
                 return FALSE;
         }
-//login
+
+        //login
+
         public function login($name, $password){
             $this->db->query('SELECT * FROM Users WHERE name = :name');
             $this->db->bind(':name', $name);
@@ -103,6 +75,7 @@
             else
                 return FALSE;
         }
+
         public function getUserbyid($id){
             $this->db->query('SELECT * FROM Users WHERE id = :id');
             $this->db->bind(':id', $id);
@@ -110,18 +83,8 @@
             return $rows;
         }
 
-        //verify
-
-        public function verify_account($vkey){
-            $this->db->query('UPDATE Users SET `verify` = 1 WHERE vkey = :vkey');
-            $this->db->bind(':vkey', $vkey);
-            if ($this->db->execute())
-                return TRUE;
-            else
-                return FALSE;
-        }
-
         //edit
+
         public function edit($data){
             $this->db->query('UPDATE Users SET `name` = :name, `email` = :email, `password` = :password WHERE id = :id');
             $this->db->bind(":id", $data['user_id']);
@@ -152,6 +115,7 @@
                 $data[] = $key;
             return $data;
         }
+
         public function Check_password($data){
             $this->db->query('SELECT * FROM Users WHERE id = :id');
             $this->db->bind(':id', $data['user_id']);
@@ -175,13 +139,70 @@
                 return FALSE;
         }
 
-        // public function edit_password($data){
-        //     $this->db->query('UPDATE Users SET password = :password WHERE email = :email');
-        //     $this->db->bind(":email", $data['email']);
-        //     $this->db->bind(":password", $data['new_p']);
-        //     if ($this->db->execute())
-        //         return TRUE;
-        //     else
-        //         return FALSE;
-        // }
+        //Check password with vkey
+        public function Check_password2($data){
+            $this->db->query('SELECT * FROM Users WHERE vkey = :vkey');
+            $this->db->bind(':vkey', $data['vkey']);
+            $rows = $this->db->single();
+            $hash_pass = $rows->password;
+            if (password_verify($data['old_p'], $hash_pass))
+                return TRUE;
+            else
+                return FALSE;
+        }
+
+        // all stuff with vkey
+
+        public function getUserTime($vkey){
+            // $this->db->query('SELECT DATE_FORMAT(created_at, "%H:%i:%s") as `time` FROM Users WHERE vkey = :vkey');
+            $this->db->query('SELECT created_at as `time` FROM Users WHERE vkey = :vkey');
+            $this->db->bind(':vkey', $vkey);
+            $this->db->execute();
+            $rows = $this->db->single();
+            return $rows;
+        }
+
+        public function already_verify($vkey){
+            $this->db->query('SELECT * FROM Users WHERE vkey = :vkey AND verify = 1');
+            $this->db->bind(':vkey', $vkey);
+            $rows = $this->db->single();
+            if ($this->db->rows() > 0)
+                return TRUE;
+            else
+                return FALSE;
+        }
+
+        public function Get_vkey($email){
+            $this->db->query('SELECT vkey FROM Users WHERE email = :email');
+            $this->db->bind(':email', $email);
+            $rows = $this->db->single();
+            if ($this->db->rows() > 0)
+                return $rows;
+            else
+                return FALSE;
+        }
+
+        //verify with vkey
+
+        public function verify_account($vkey){
+            $this->db->query('UPDATE Users SET `verify` = 1 WHERE vkey = :vkey');
+            $this->db->bind(':vkey', $vkey);
+            if ($this->db->execute())
+                return TRUE;
+            else
+                return FALSE;
+        }
+
+        // verify forget with help of vkey
+
+        public function verify_forget($data){
+            $this->db->query('UPDATE Users SET `password` = :password WHERE vkey = :vkey AND verify = 1');
+            $this->db->bind(':vkey', $data['vkey']);
+            $this->db->bind(':password', $data['new_p']);
+            if ($this->db->execute())
+                return TRUE;
+            else
+                return FALSE;
+        }
+
     }

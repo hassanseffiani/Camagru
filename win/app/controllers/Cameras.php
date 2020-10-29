@@ -14,9 +14,8 @@
                     'img' => $img,
                     'img_err' => '',
                     'is_in' => 0,
-                    'root' => get_all_stickers()
+                    'arr' => get_all_stickers()
                 ];
-                // $data['root'] = get_all_stickers();
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     if (isset($_FILES['file']))
@@ -63,7 +62,7 @@
                             redirect('cameras');
                     }
                 }
-                    // $this->view('cameras/index', $data);
+                $this->view('cameras/index', $data);
         }
 
         /// Delete preview

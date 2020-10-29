@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-////webcam
+///webcam
 var video = document.getElementById('video'),
     photo = document.getElementById('photo'),
     select_photo = document.getElementById("photo-filter"),
@@ -53,11 +53,10 @@ function ch_filter(){
   input.disabled = false;
   title_filter.innerHTML = "";
   getVideo()
-  make_base();
 }
 
 function snap(){
-    canvas.width = video.clientWidth;;
+    canvas.width = video.clientWidth;
     canvas.height = video.clientHeight;
     // ctx.filter =  select_photo.value;
     ctx.drawImage(video, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
@@ -69,13 +68,6 @@ function takephoto(){
   snap();
   img64.value = canvas.toDataURL().substring(22);
   filter_64.value = select_photo.value;
-}
-
-function make_base()
-{
-  base_image = new Image();
-  base_image.src = "https://w0.pngwave.com/png/752/702/emoji-sticker-smirk-text-messaging-emoticon-emoji-hike-png-clip-art.png";
-  ctx.drawImage(base_image, 100, 100);
 }
 
 // getVideo();
@@ -108,10 +100,6 @@ function ch(){
   display_vedio.style.display = "none";
   display(input);
 }
-
-// pagination
-
-
 
 /// display like && comment
 

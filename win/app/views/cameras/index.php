@@ -5,7 +5,6 @@
                 <?php if(is_login_in()) :?>
                     <div class="columns">
                         <div class="column">
-
                             <div class="column">
                                 <a href="<?php echo URLROOT;?>posts" class="button is-link is-outlined has-text-left">
                                 <span class="icon">
@@ -14,6 +13,9 @@
                                 <p class="containt">Back</p>
                                 </a>
                             </div>
+                            <? $i = 0; foreach($data['arr'] as $arr) : ?>
+                                <img id="<?= $i?>" src="data:jpg;base64,<?= $arr?>" style="filter : <?php echo $img->filter?> ;" alt="image" width="15%" onclick="ch_test();"/>
+                            <? $i++; endforeach;?>
                             <div class="columns">
                                 <div class="column control">
                                     <div class="select is-primary">
@@ -25,9 +27,8 @@
                                             <option value="invert(100%)">Invert</option>
                                             <option value="hue-rotate(90deg)">Hue</option>
                                             <option value="blur(10px)">Blur</option>
-                                            <option value="contrast(200%)">Contrast</option>sepia(60%);
+                                            <option value="contrast(200%)">Contrast</option>
                                         </select>
-                                        <?php var_dump($data['root']);//echo foreach()?>
                                     </div>
                                 </div>
                                 <!-- <div class="column control">
@@ -104,5 +105,16 @@
                     </div>
                 </div>
             </div>
+            <script>
+                //camera preview
+
+                function ch_test(){
+                    var c = document.getElementById("canvas");
+                    var ctx = c.getContext("2d");
+                    var img = document.getElementById("0");
+                    ctx.drawImage(img, 10, 10, c.offsetWidth, c.offsetHeight);
+                    console.log(ctx);
+                }
+            </script>
         <?php endif ;?>
 <?php require APPROOT . "/views/inc/footer.php"; ?>

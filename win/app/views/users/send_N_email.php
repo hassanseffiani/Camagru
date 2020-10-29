@@ -10,7 +10,7 @@
             <div class="field">
                 <label class="label">Email: <sup>*</sup></label>
                 <div class="control">
-                    <input class="input <?php echo (!empty($data['email'])) ? 'is-success' : ''?>" type="text" name="email" placeholder="Your_email@gmail.com" value="<?php echo $data['email']?>">
+                    <input class="input <?= (!empty($data['email_err'])) ? 'is-danger' : ''?>" type="text" name="email" placeholder="Your_email@gmail.com" value="<?php echo $data['email']?>">
                     <p class="help is-danger"><?php echo $data['email_err']?></p>
                 </div>
             </div>

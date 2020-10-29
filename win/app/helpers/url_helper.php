@@ -32,10 +32,8 @@
       function get_all_stickers(){
         $file = APPROOT2.'*';
         $files = glob($file); //get all file names
-        $arr = array();
-        foreach($files as $file){
-            // if(is_file($file))
-                $arr = array_push($arr, $file); //get file
-        }
-        var_dump($arr);
+        $arr = [];
+        foreach($files as $file)
+          array_push($arr, (base64_encode(file_get_contents($file))));
+        return ($arr);
       }
