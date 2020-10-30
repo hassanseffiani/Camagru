@@ -14,9 +14,8 @@
                     'img' => $img,
                     'img_err' => '',
                     'is_in' => 0,
-                    'root' => get_all_stickers()
+                    'arr' => get_all_stickers()
                 ];
-                // $data['root'] = get_all_stickers();
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     if (isset($_FILES['file']))
@@ -54,8 +53,20 @@
                         }
                     }
                     else{
+                        $img1 = base64_decode(trim($_POST['img64']));
+                        $img2 = base64_decode(trim($_POST['sticker64']));
+                        $img1 = imagecreatefromstring($img1);
+                        $img2 = imagecreatefromstring($img2);
+
+                        // Copy and merge 
+                        imagecopymerge($img1, $img2, 200, 150, 0, 0, 500, 200, 75);
+                        ob_start();
+                        imagepng($img1);
+                        $bin = ob_get_clean();
+                        $b64 = base64_encode($bin);
                         $data1 = [
-                            'img_dir' => trim($_POST['img64']),
+                            'sticker64' => trim($_POST['sticker64']),
+                            'img_dir' => $b64,
                             'filter' => trim($_POST['filter'])
                         ];
                         $data = array_merge($data, $data1);
