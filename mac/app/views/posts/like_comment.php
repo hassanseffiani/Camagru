@@ -110,25 +110,4 @@
             <?php endif ;?>
         </div>
     </div>
-    <script>
-        function dlt_f_ajax(id, j){
-            var p0 = document.getElementById('all_comment_p');
-            var p = p0.innerHTML;
-            p = p.substring(6);
-            var elem_dlt = document.getElementById("elem_to_dlt"+j);
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://10.12.100.72/Camagru/posts/delete_comment/"+id, true);
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            xhr.onload = function(){
-                if (this.responseText != 1){
-                //delete elemet
-                elem_dlt.parentNode.removeChild(elem_dlt);
-                //decrement nbr
-                var r = +p - +1;
-                p0.innerHTML = "&nbsp" + r;
-                }
-            }
-            xhr.send();
-        }
-    </script>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

@@ -39,7 +39,7 @@
             if (!empty($data['filter']))
                 $this->db->bind(':filter', $data['filter']);
             else
-                $this->db->bind(':filter', $data['filter']);
+                $this->db->bind(':filter', 'none');
             if ($this->db->execute())
                 return TRUE;
             else

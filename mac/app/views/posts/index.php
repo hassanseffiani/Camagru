@@ -103,7 +103,6 @@
               </div>
               <div class="content">
                 <!--to like-->
-                <!--  echo URLROOT;?>posts/add_like/ echo $post->id; -->
                 <a onclick="like_ajax_post(<?= $post->id;?>, <?= $j;?>);" class="button is-danger is-outlined is-left">
                   <i class="fi-heart"></i>
                   <p id="like_p<?= $j;?>">&nbsp;<?php echo $post->cnt_like;?></p>
@@ -146,45 +145,6 @@
     </div>
   </div>
   </div>
-  <script>
-    function like_ajax_post(id, j){
-      var p0 = document.getElementById('like_p'+j);
-      var p = document.getElementById('like_p'+j).innerHTML;
-      p = p.substring(6);
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
-      xhr.onload = function(){
-          var r = +p + +this.responseText;
-          p0.innerHTML = "&nbsp" + r;
-        }
-      xhr.send();
-    }
-
-    document.getElementById('comment_ajax').addEventListener('click', ft_comment_ajax);
-    function ft_comment_ajax(e){
-      e.preventDefault();
-    }
-
-    function t_c(id, j){
-      var p0 = document.getElementById('comment_p'+j);
-      var p = document.getElementById('comment_p'+j).innerHTML;
-      p = p.substring(6);
-      var comment = document.getElementById('comment_text'+j).value;
-      var params = "comment="+comment;
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_comment/"+id, true);
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.onload = function(){
-        if (this.responseText){
-          document.getElementById('comment_text'+j).value = "";
-          var r = +p + +1;
-          p0.innerHTML = "&nbsp" + r;
-        }
-      }
-      xhr.send(params);
-    }
-
-  </script>
   <?php $j++;?>
 <?php endif;?>
 <?php endforeach;?>

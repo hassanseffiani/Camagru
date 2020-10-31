@@ -67,7 +67,7 @@
                                 <a href='".URLROOT.'users/verify/'.$data['vkey']."'>Verify your account</a>
                             </body>
                             </html>";
-                            verify($data['email'], $message);
+                            // verify($data['email'], $message);
                             redirect('users/login');
                         }
                         else

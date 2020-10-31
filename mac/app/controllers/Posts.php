@@ -99,8 +99,8 @@
                     $this->postModel->delete_like($data);
                     echo -1;
                 }
-            }
-            redirect('posts');
+            }else
+                redirect('posts');
         }
 
         //// Comments

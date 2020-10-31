@@ -37,3 +37,20 @@
           array_push($arr, (base64_encode(file_get_contents($file))));
         return ($arr);
       }
+
+      //to merge and copy image with base 64
+
+      function merge_64($i1, $i2){
+        $img1 = base64_decode($i1);
+        $img2 = base64_decode($i2);
+        $img1 = imagecreatefromstring($img1);
+        $img2 = imagecreatefromstring($img2);
+
+        // Copy and merge 
+        imagecopy($img1, $img2, 200, 150, 0, 0, 75, 75);
+        ob_start();
+        imagepng($img1);
+        $bin = ob_get_clean();
+        $b64 = base64_encode($bin);
+        return $b64;
+      }

@@ -30,11 +30,15 @@ var video = document.getElementById('video'),
     filter_64 = document.getElementById('filter'),
     input = document.getElementById('inpFile'),
     display_vedio = document.getElementById('display_vedio'),
-    title_filter = document.getElementById('title_filter');
+    title_filter = document.getElementById('title_filter'),
+    click = 0;
 
 if (video){
   var canvas = document.getElementById('canvas'),
   ctx = canvas.getContext('2d');
+  input.disabled = true;
+  take.disabled = true;
+  getVideo();
 
   function getVideo() {
       navigator.mediaDevices.getUserMedia({ video: true })
@@ -46,27 +50,16 @@ if (video){
 
   ///filter
 
-  // if (select_photo.options[0].value == ""){
-      // input.disabled = true;
-      // take.disabled = true;
-      getVideo();
-  // }
-
-  
-
-
   function ch_filter(){
       video.style.filter = select_photo.value;
-      // title_filter.innerHTML = "";
-      //to update this method by the old git plz
+      title_filter.innerHTML = "";
   }
 
 
   function snap(){
-      canvas.width = video.clientWidth;;
+    // vedio with canvas
+      canvas.width = video.clientWidth;
       canvas.height = video.clientHeight;
-      // check for the outility ctx.filter ...
-      // ctx.filter =  select_photo.value;
       ctx.drawImage(video, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
       canvas.style.visibility = "hidden";
       canvas.style.position = "absolute";
@@ -74,14 +67,12 @@ if (video){
 
   //camera preview
 
-//to contunue
-
   function changeSubImg($id){
       var img = document.getElementById($id);
-      img.addEventListener("click", () => {
-        
-      }, false);
-      ctx.drawImage(img, 0, 0, 70, 60);
+      canvas.width = 75;
+      canvas.height = 75;
+      click = 1;
+      ctx.drawImage(img, 0, 0, 75, 75);
       canvas.style.visibility = "hidden";
       canvas.style.position = "absolute";
       sticker64.value = canvas.toDataURL().substring(22);
@@ -92,13 +83,15 @@ if (video){
   //take photo button
 
   function takephoto(){
-    snap();
-    //input hidden
-    img64.value = canvas.toDataURL().substring(22);
-    filter_64.value = select_photo.value;
+    if (click === 1){
+        snap();
+        //input hidden
+        img64.value = canvas.toDataURL().substring(22);
+        filter_64.value = select_photo.value;
+    }else
+      alert("Please choose a stickers");
   }
 }
-console.log(sticker64);
 
 
 //display input image
@@ -119,8 +112,19 @@ function display(input) {
    }
 }
 
+// input security
+if (input){
+  input.addEventListener("change", () => {
+    if (click === 1)
+      ch();
+    else
+      alert("Please choose a stickers");
+  }, false);
+}
+
 //file
 function ch(){
+  
   const fileInput = document.querySelector('#file-js input[type=file]');
   if (fileInput.files.length > 0) {
     const fileName = document.querySelector('#file-js .file-name');
@@ -171,27 +175,41 @@ function display_comment_post(j){
       form_comment[j].style.display = "none";
 }
 
-function like_ajax(id,j){
-  var request = new XMLHttpRequest();
-    // Instantiating the request object
-    request.open("GET", "http://10.12.100.72/Camagru/posts/add_like/" + id);
-    // Defining event listener for readystatechange event
-    request.onreadystatechange = function() {
-        // Check if the request is compete and was successful
-        if(this.readyState === 4 && this.status === 200){
-          var sub;
-          var like = document.getElementById(j);
-          if (like.innerHTML.length > 5)
-            sub = like.innerHTML.substr(6);
-          else
-            sub = like.innerHTML;
-          var value = Number(sub) + Number(this.responseText);
-          like.innerHTML = "&nbsp;".concat(value);
-        }
-    };
-    // Sending the request to the server
-    request.send();
+
+// like and comment and buuton dlt in show view with help of ajax
+
+function like_ajax_post(id, j){
+  var p0 = document.getElementById('like_p'+j);
+  var p = document.getElementById('like_p'+j).innerHTML;
+  p = p.substring(6);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
+  xhr.onload = function(){
+      var r = +p + +this.responseText;
+      p0.innerHTML = "&nbsp" + r;
+  }
+  xhr.send();
 }
+
+  function t_c(id, j){
+    var p0 = document.getElementById('comment_p'+j);
+    var p = document.getElementById('comment_p'+j).innerHTML;
+    p = p.substring(6);
+    var comment = document.getElementById('comment_text'+j).value;
+    var params = "comment="+comment;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_comment/"+id, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function(){
+      if (this.responseText){
+        document.getElementById('comment_text'+j).value = "";
+        var r = +p + +1;
+        p0.innerHTML = "&nbsp" + r;
+      }
+    }
+    xhr.send(params);
+  }
 
 //delete comment ajax
 
@@ -202,15 +220,14 @@ function dlt_f_ajax(id, j){
   var elem_dlt = document.getElementById("elem_to_dlt"+j);
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "http://10.12.100.72/Camagru/posts/delete_comment/"+id, true);
-  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   xhr.onload = function(){
-    if (this.responseText != 1){
-      //delete elemet
-      elem_dlt.parentNode.removeChild(elem_dlt);
-      //decrement nbr
-      var r = +p - +1;
-      p0.innerHTML = "&nbsp" + r;
-    }
+      if (this.responseText != 1){
+        //delete elemet
+        elem_dlt.parentNode.removeChild(elem_dlt);
+        //decrement nbr
+        var r = +p - +1;
+        p0.innerHTML = "&nbsp" + r;
+      }
   }
   xhr.send();
 }

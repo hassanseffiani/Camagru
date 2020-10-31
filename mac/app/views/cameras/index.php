@@ -13,12 +13,15 @@
                                 <p class="containt">Back</p>
                                 </a>
                             </div>
-                        <?php $i = 0; foreach($data['arr'] as $arr) { ?>
-                            <img id="<?= $i?>" src="data:pnj;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
+                        <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
+                            <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
                         <?php $i++; } ?>
+                        <h1 class="title" id="title_filter">Choose a filter :</h1>
+
                             <div class="columns">
                                 <div class="column control">
                                     <div class="select is-primary">
+
                                         <select id="photo-filter" class="control" onchange="ch_filter();">
                                             <option value="" disabled selected></option>
                                             <option value="none">Normal</option>
@@ -33,9 +36,8 @@
                                 </div>
                             </div>
                             <form action="<?php echo URLROOT;?>cameras/index" method="POST" enctype="multipart/form-data">
-                                <!-- <h1 class="title" id="title_filter">Choose a filter</h1> -->
                                 <div class="border_video" id="display_vedio">
-                                    <video id="video" width="100%"><hi class="title">Choose a filter</h1></video>
+                                    <video id="video" width="100%"></video>
                                     <canvas id="canvas"><canvas>
                                 </div>
 
@@ -47,7 +49,7 @@
                             <!-- <form action="<?php echo URLROOT;?>cameras/index" method="POST" enctype="multipart/form-data"> -->
                                 <div id="file-js" class="file">
                                     <label class="file-label">
-                                        <input class="file-input" id="inpFile" type="file" name="file" onchange="ch();">
+                                        <input class="file-input" id="inpFile" type="file" name="file">
                                         <span class="file-cta">
                                             <span class="file-icon">
                                                 <i class="fas fa-upload"></i>
