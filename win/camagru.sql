@@ -9,7 +9,8 @@ CREATE TABLE Users(
     `password` VARCHAR(255) NOT NULL,
     `vkey` VARCHAR(255) NOT NULL,
     `verify` int(11) NOT NULL DEFAULT 0,
-    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `notify` int(11) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE Posts(
@@ -42,3 +43,6 @@ CREATE TABLE Likes(
     PRIMARY KEY (id),
     FOREIGN KEY (post_id) REFERENCES Posts(id) ON DELETE CASCADE
 )
+
+ALTER TABLE Users 
+ADD notify int(11) NOT NULL DEFAULT 0;

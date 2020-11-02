@@ -9,11 +9,11 @@
   <div id="navbarBasicExample" class="navbar-menu">
     <div class="navbar-start">
       <?php if(is_login_in()) :?>
-        <a class="navbar-item" href="<?php  echo URLROOT ;?>posts/post">
+        <a class="navbar-item" href="<?php  echo URLROOT ;?>posts">
           <i class="fi-home"></i>
         </a>
       <?php else :?>
-        <a class="navbar-item" href="<?php echo URLROOT ;?>posts/post">
+        <a class="navbar-item" href="<?php echo URLROOT ;?>posts">
           <i class="fi-home"></i>
         </a>
       <?php endif;?>

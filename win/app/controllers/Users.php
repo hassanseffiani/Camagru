@@ -25,7 +25,7 @@
                     ];
                     if (empty($data['email']))
                         $data['email_err'] = 'Enter a valid email';
-                    else if (!$this->userModel->Check_email($data['email']))
+                    else if ($this->userModel->Check_email($data['email']))
                         $data['email_err'] = 'Email not found';
                     else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
                         $data['email_err'] = 'Enter a valid email';
@@ -67,7 +67,7 @@
                                 <a href='".URLROOT.'users/verify/'.$data['vkey']."'>Verify your account</a>
                             </body>
                             </html>";
-                            verify($data['email'], $message);
+                            // verify($data['email'], $message);
                             redirect('users/login');
                         }
                         else
@@ -373,6 +373,7 @@
         public function edit(){
             if (is_login_in()){
                 $info = $this->userModel->getUserbyinfo($_SESSION['user_id']);
+                $n = $this->userModel->notifyResult($_SESSION['user_id']);
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $data = [
@@ -383,11 +384,9 @@
                         'name_err' => '',
                         'email_err' => '',
                         'old_p_err' => '',
+                        'notify' => $n->notify
                     ];
-                    if (empty($data['name']))
-                        $data['name'] = $info[1];
-                    if (empty($data['email']))
-                        $data['email'] = $info[1];
+                    //     $data['email'] = $info[1];
                         
                     if (empty($data['name']))
                         $data['name_err'] = "Enter a valid name";
@@ -408,6 +407,7 @@
                     $this->view('users/edit', $data);
                 }else{
                     $info = $this->userModel->getUserbyinfo($_SESSION['user_id']);
+                    $n = $this->userModel->notifyResult($_SESSION['user_id']);
                     $data = [
                         'user_id' => $_SESSION['user_id'],
                         'name' => '',
@@ -418,12 +418,14 @@
                         'email_err' => '',
                         'old_p_err' => '',
                         'new_p_err' => '',
+                        'notify' => $n->notify
                     ];
                     $data['name'] = $info[0];
                     $data['email'] = $info[1];
                 
                     $this->view('users/edit', $data);
                 }
+
             }else
             $this->view('users/login', $data);
         }
@@ -451,8 +453,8 @@
                     }
                     if (empty($data['new_p']))
                         $data['new_p_err'] = "Enter a valid password";
-                    else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
-                        $data['new_p_err'] = 'Enter a valid password';
+                    // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
+                        // $data['new_p_err'] = 'Enter a valid password';
                     else if ($data['new_p'] == $data['old_p'])
                         $data['new_p_err'] = "Enter another password";
                     if (empty($data['con_p']))
@@ -489,5 +491,21 @@
             $_SESSION['user_name'] = '';
             session_destroy();
             redirect('users/login');
+        }
+
+        //notify
+
+        public function notify(){
+            if (is_login_in()){
+                $n = $this->userModel->notifyResult($_SESSION['user_id']);
+                if ($n->notify === '0'){
+                    $this->userModel->modelNotify($_SESSION['user_id']);
+                    redirect('users/edit');
+                }else{
+                    $this->userModel->modelNotify1($_SESSION['user_id']);
+                    redirect('users/edit');
+                }
+            }else
+                $this->view('users/login', $data);
         }
     }

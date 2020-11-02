@@ -13,12 +13,15 @@
                                 <p class="containt">Back</p>
                                 </a>
                             </div>
-                            <? $i = 0; foreach($data['arr'] as $arr) : ?>
-                                <img id="<?= $i?>" src="data:jpg;base64,<?= $arr?>" style="filter : <?php echo $img->filter?> ;" alt="image" width="15%" onclick="ch_test();"/>
-                            <? $i++; endforeach;?>
+                        <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
+                            <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
+                        <?php $i++; } ?>
+                        <h1 class="title" id="title_filter">Choose a filter :</h1>
+
                             <div class="columns">
                                 <div class="column control">
                                     <div class="select is-primary">
+
                                         <select id="photo-filter" class="control" onchange="ch_filter();">
                                             <option value="" disabled selected></option>
                                             <option value="none">Normal</option>
@@ -31,30 +34,22 @@
                                         </select>
                                     </div>
                                 </div>
-                                <!-- <div class="column control">
-                                    <div class="select is-primary">
-                                        <select id="photo_stickers" class="control" onchange="filter_stiker();">
-                                            <option value="" disabled selected></option>
-                                            <option>nrml</option>
-                                        </select>
-                                    </div>
-                                </div> -->
                             </div>
                             <form action="<?php echo URLROOT;?>cameras/index" method="POST" enctype="multipart/form-data">
-                                <h1 class="title" id="title_filter">Choose a filter</h1>
                                 <div class="border_video" id="display_vedio">
-                                    <video id="video" width="100%"><hi class="title">Choose a filter</h1></video>
+                                    <video id="video" width="100%"></video>
                                     <canvas id="canvas"><canvas>
                                 </div>
 
                                 <div id="photo"></div>
                                 <input type="hidden" name="img64" id="img64">
+                                <input type="hidden" name="sticker64" id="sticker64" value="">
                                 <input type="hidden" name="filter" id="filter">
                             <!-- </form> -->
                             <!-- <form action="<?php echo URLROOT;?>cameras/index" method="POST" enctype="multipart/form-data"> -->
                                 <div id="file-js" class="file">
                                     <label class="file-label">
-                                        <input class="file-input" id="inpFile" type="file" name="file" onchange="ch();">
+                                        <input class="file-input" id="inpFile" type="file" name="file">
                                         <span class="file-cta">
                                             <span class="file-icon">
                                                 <i class="fas fa-upload"></i>
@@ -83,7 +78,7 @@
                                     <div class="content" id="c_scroll">
                                         <table class="table is-fullwidth is-striped">
                                             <tbody>
-                                            <? foreach($data['img'] as $img) :?>
+                                            <?php foreach($data['img'] as $img) {?>
                                                 <tr>
                                                     <form action="<?php echo URLROOT;?>cameras/delete_preview/<?php echo $img->id; ?>" method="post">
                                                         <img src="data:<?php echo $img->type?>;base64,<?php echo $img->img?>" style="filter : <?php echo $img->filter?> ;" alt="image"/>
@@ -95,7 +90,7 @@
                                                     </form>
                                                     <br>
                                                 </tr>
-                                            <? endforeach; ?>
+                                            <?php } ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -105,16 +100,25 @@
                     </div>
                 </div>
             </div>
-            <script>
-                //camera preview
-
-                function ch_test(){
-                    var c = document.getElementById("canvas");
-                    var ctx = c.getContext("2d");
-                    var img = document.getElementById("0");
-                    ctx.drawImage(img, 10, 10, c.offsetWidth, c.offsetHeight);
-                    console.log(ctx);
-                }
-            </script>
         <?php endif ;?>
+        <script>
+            function dlt_f_ajax(id, j){
+                var p0 = document.getElementById('all_comment_p');
+                var p = p0.innerHTML;
+                p = p.substring(6);
+                var elem_dlt = document.getElementById("elem_to_dlt"+j);
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://localhost/Camagru/posts/delete_comment/"+id, true);
+                xhr.onload = function(){
+                    if (this.responseText != 1){
+                        //delete elemet
+                        elem_dlt.parentNode.removeChild(elem_dlt);
+                        //decrement nbr
+                        var r = +p - +1;
+                        p0.innerHTML = "&nbsp" + r;
+                    }
+                }
+                xhr.send();
+                }
+        </script>
 <?php require APPROOT . "/views/inc/footer.php"; ?>

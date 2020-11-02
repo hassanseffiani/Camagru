@@ -9,6 +9,8 @@
         /// Index For all POST
 
         public function index($page = 0){
+            // $n = $this->userModel->notifyResult($_SESSION['user_id']);
+            // var_dump($n);
             $rpp = 5;
             isset($page) ? $page = $page : $page = 0;
             if ($page > 1)
@@ -45,32 +47,9 @@
             $this->view('posts/index', $data);
         }
 
-        
-        public function delete_all($id){
-            $this->cameraModel->delete_all($id);
-            $file = APPROOT1.'*';
-            $files = glob($file); //get all file names
-            foreach($files as $file){
-                if(is_file($file))
-                unlink($file); //delete file
-            }
-            flash('dlt_file','File delete succes');
-            redirect('posts');
-        }
+        // dlt a post
 
-        /// Show detail Post
-
-        public function show($id){
-            $post = $this->postModel->getPostbyid($id);
-            $user = $this->userModel->getUserbyid($post->user_id);
-            $data = [
-                'user' => $user,
-                'post' => $post
-            ];
-            $this->view('posts/show', $data);
-        }
-
-        public function delete($id){
+        public function delete($id = 0){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $post = $this->userModel->getUserbyid($id);
                 if ($post->user_id != $_SESSION['id'])
@@ -88,6 +67,7 @@
                 redirect('posts');
             }
         }
+
         //// likes
 
         public function like($id){
@@ -102,7 +82,7 @@
             $this->view('posts/like', $data);
         }
 
-        public function add_like($id){
+        public function add_like($id = 0){
             if (is_login_in()){
                 $like = $this->postModel->get_like($id);
                 $post = $this->postModel->getPostbyid($id);
@@ -113,60 +93,63 @@
                 ];
                 if (!$like){
                     $this->postModel->sql_like($data);
-                    verify($_SESSION['user_email'], "You like a post");
                     echo 1;
                 }
                 else{
                     $this->postModel->delete_like($data);
                     echo -1;
                 }
-            }
+            }else
+                redirect('users/login');
         }
 
         //// Comments
 
-        public function comment($id){
-            $post = $this->postModel->getPostbyid($id);
-            $comment = $this->postModel->get_comment($id);
-            $user = $this->userModel->getUserbyid($_SESSION['user_id']);
-            $data = [
-                'user' => $user,
-                'post' => $post,
-                'list' => $comment
-            ];
-            $_SESSION['post_id'] = $id;
-            $this->view('posts/comment', $data);
-        }
-
-        public function add_comment($id){
+        public function add_comment($id = 0){
             if (is_login_in()){
-                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    echo 1;
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $post = $this->postModel->getPostbyid($id);
                     $user = $this->userModel->getUserbyid($_SESSION['user_id']);
+                    $userPost = $this->postModel->getUserEmailbyPostid($id);
+                    $n = $this->userModel->notifyResult($_SESSION['user_id']);
                     $data = [
                         'user' => $user,
                         'post' => $post,
-                        'comment' => trim($_POST['comment']),
+                        'comment' => htmlspecialchars(trim($_POST['comment'])),
                         'comment_err' => ''
                     ];
                     if (empty($data['comment']))
                         $data['comment_err'] = "Write something for this post.";
                     if (empty($data['comment_err'])){
-                        if ($this->postModel->sql_comment($data))
-                            redirect('posts');
-                    }else
-                        redirect('posts');}
-            }else
-                redirect('post');
+                        if ($this->postModel->sql_comment($data)){
+                            $message = "<html>
+                            <head>
+                                <title>Notif like</title>
+                            </head>
+                            <body>
+                                <p>
+                                    You just receive a comment
+                                </p>
+                            </body>
+                            </html>";
+                            if ($n->notify === "0")
+                                verify($userPost->email, $message);
+                        }
+                    }
+                }
+            }
+            redirect('users/login');
         }
 
-        public function delete_comment($id){
+        public function delete_comment($id = 0){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $this->postModel->delete_comment_sql($id);
                 redirect('posts/like_comment/'.$_SESSION['post_id']);
                 $_SESSION['post_id'] = "";
             }
+            redirect('posts');
         }
 
         // like comment
@@ -176,17 +159,17 @@
             $cnt_comment = $this->postModel->count_comment($id);
             $like = $this->postModel->get_like_all($id);
             $post = $this->postModel->getPostbyid($id);
-            $user = $this->userModel->getUserbyid($_SESSION['user_id']);
+            $userPost = $this->postModel->getUserNamebyPostid($id);
+            // $user = $this->userModel->getUserbyid($_SESSION['user_id']);
             $comment = $this->postModel->get_comment($id);
             $data = [
-                'user' => $user,
+                'user' => $userPost,
                 'post' => $post,
                 'like' => $like,
                 'list' => $comment,
                 'cnt_like' => $cnt_like,
                 'cnt_comment' => $cnt_comment,
             ];
-            // var_dump($data);
             $_SESSION['post_id'] = $id;
             $this->view('posts/like_comment', $data);
         }
