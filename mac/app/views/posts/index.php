@@ -11,14 +11,6 @@
             </span>
             <p class="containt">Add</p>
           </a>
-          <a href="<?php echo URLROOT;?>posts/delete_all/<?php echo $_SESSION['user_id']?>">
-            <button class="button is-danger is-outlined">
-              <span>Delete All post</span>
-              <span class="icon is-small">
-                  <i class="fas fa-times"></i>
-              </span>
-            </button>
-          </a>
         <?php endif; ?>
       </div>
     </div>
@@ -116,8 +108,7 @@
                 <div name="form_comment" id="comment_ajax">
                     <div class="field">
                         <div class="control">
-                            <input class="input" <?php echo (!empty($data['comment'])) ? 'is-success' : ''?> type="text" name="comment" id="comment_text<?= $j;?>" placeholder="Add a comment . . ." value="<?php echo $data['comment']?>">
-                            <p class="help is-danger"><?php echo $data['comment_err']?></p>
+                            <input class="input" type="text" name="comment" id="comment_text<?= $j;?>" placeholder="Add a comment . . .">
                         </div>
                     </div>
                     <button class="button is-primary is-outlined" onclick="t_c(<?= $post->id;?>, <?= $j;?>);">

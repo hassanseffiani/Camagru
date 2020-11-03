@@ -13,10 +13,10 @@
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $vkey = md5(time(). trim($_POST['email']));
                     $data = [
-                        'name' => trim($_POST['name']),
-                        'email' => trim($_POST['email']),
-                        'password' => trim($_POST['password']),
-                        'confirm_password' => trim($_POST['confirm_password']),
+                        'name' => htmlspecialchars(trim($_POST['name'])),
+                        'email' => htmlspecialchars(trim($_POST['email'])),
+                        'password' => htmlspecialchars(trim($_POST['password'])),
+                        'confirm_password' => htmlspecialchars(trim($_POST['confirm_password'])),
                         'vkey' => $vkey,
                         'name_err' => '',
                         'email_err' => '',
@@ -146,9 +146,9 @@
         public function send_N_email(){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                $vkey = $this->userModel->Get_vkey(trim($_POST['email']));
+                $vkey = $this->userModel->Get_vkey(htmlspecialchars(trim($_POST['email'])));
                 $data = [
-                    'email' => trim($_POST['email']),
+                    'email' => htmlspecialchars(trim($_POST['email'])),
                     'vkey' => $vkey->vkey,
                     'email_err' => ''
                 ];
@@ -196,9 +196,9 @@
         public function forget(){
             if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                $vkey = $this->userModel->Get_vkey(trim($_POST['email']));
+                $vkey = $this->userModel->Get_vkey(htmlspecialchars(trim($_POST['email'])));
                 $data = [
-                    'email' => trim($_POST['email']),
+                    'email' => htmlspecialchars(trim($_POST['email'])),
                     'vkey' => $vkey->vkey,
                     'email_err' => ''
                 ];
@@ -253,9 +253,9 @@
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                 $data = [
                     'vkey' => $vkey,
-                    'old_p' => trim($_POST['old_p']),
-                    'new_p' => trim($_POST['new_p']),
-                    'con_p' => trim($_POST['con_p']),
+                    'old_p' => htmlspecialchars(trim($_POST['old_p'])),
+                    'new_p' => htmlspecialchars(trim($_POST['new_p'])),
+                    'con_p' => htmlspecialchars(trim($_POST['con_p'])),
                     'vkey_err' => '',
                     'old_p_err' => '',
                     'new_p_err' => '',
@@ -319,8 +319,8 @@
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $data = [
-                        'Username' => trim($_POST['email']),
-                        'password' => trim($_POST['password']),
+                        'Username' => htmlspecialchars(trim($_POST['email'])),
+                        'password' => htmlspecialchars(trim($_POST['password'])),
                         'Username_err' => '',
                         'password_err' => '',
                         'verify_err' => '',
@@ -386,9 +386,6 @@
                         'old_p_err' => '',
                         'notify' => $n->notify
                     ];
-                    // if (empty($data['name']))
-                    //     $data['name'] = $info[0];
-                    // if (empty($data['email']))
                     //     $data['email'] = $info[1];
                         
                     if (empty($data['name']))
@@ -428,6 +425,7 @@
                 
                     $this->view('users/edit', $data);
                 }
+
             }else
             $this->view('users/login', $data);
         }
@@ -440,9 +438,9 @@
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $data = [
                         'user_id' => $_SESSION['user_id'],
-                        'old_p' => trim($_POST['old_p']),
-                        'new_p' => trim($_POST['new_p']),
-                        'con_p' => trim($_POST['con_p']),
+                        'old_p' => htmlspecialchars(trim($_POST['old_p'])),
+                        'new_p' => htmlspecialchars(trim($_POST['new_p'])),
+                        'con_p' => htmlspecialchars(trim($_POST['con_p'])),
                         'old_p_err' => '',
                         'new_p_err' => '',
                         'con_p_err' => '',

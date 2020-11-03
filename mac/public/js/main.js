@@ -29,8 +29,12 @@ var video = document.getElementById('video'),
     sticker64 = document.getElementById('sticker64'),
     filter_64 = document.getElementById('filter'),
     input = document.getElementById('inpFile'),
+    fileInput = document.querySelector('#file-js input[type=file]'),
     display_vedio = document.getElementById('display_vedio'),
     title_filter = document.getElementById('title_filter'),
+    imgHeight = 0,
+    imgWidth = 0,
+    id,
     click = 0;
 
 if (video){
@@ -67,15 +71,20 @@ if (video){
 
   //camera preview
 
+  function canvassize(img, w, h){
+    canvas.width = w;
+    canvas.height = h;
+    ctx.drawImage(img, 0, 0, w, h);
+    canvas.style.visibility = "hidden";
+    canvas.style.position = "absolute";
+    sticker64.value = canvas.toDataURL().substring(22);
+  }
+
   function changeSubImg($id){
+      id = $id;
       var img = document.getElementById($id);
-      canvas.width = 75;
-      canvas.height = 75;
+      canvassize(img, 75, 75);
       click = 1;
-      ctx.drawImage(img, 0, 0, 75, 75);
-      canvas.style.visibility = "hidden";
-      canvas.style.position = "absolute";
-      sticker64.value = canvas.toDataURL().substring(22);
       input.disabled = false;
       take.disabled = false;
   }
@@ -84,15 +93,28 @@ if (video){
 
   function takephoto(){
     if (click === 1){
+      if (input.files[0]){
+        var img = document.getElementById(id);
+        canvassize(img, imgWidth / 6.6, imgHeight / 5)
+      }else{
         snap();
         //input hidden
         img64.value = canvas.toDataURL().substring(22);
         filter_64.value = select_photo.value;
+      }
     }else
       alert("Please choose a stickers");
   }
 }
 
+// Dark mode
+//TO CONTINUE
+function setDark() {
+  const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+  // if (prefersDarkScheme)
+   const theme = document.body.classList.toggle("dark-theme");
+    document.cookie = "theme=" + theme;
+}
 
 //display input image
 
@@ -114,18 +136,25 @@ function display(input) {
 
 // input security
 if (input){
-  input.addEventListener("change", () => {
+  fileInput.addEventListener("change", () => {
+    var _URL = window.URL || window.webkitURL;
+    if (file = input.files[0]) {
+      img = new Image();
+      img.onload = function() {
+        imgHeight = this.height;
+        imgWidth = this.width;
+      };
+      img.src = _URL.createObjectURL(file);
+    }
     if (click === 1)
       ch();
     else
       alert("Please choose a stickers");
-  }, false);
+  });
 }
 
 //file
 function ch(){
-  
-  const fileInput = document.querySelector('#file-js input[type=file]');
   if (fileInput.files.length > 0) {
     const fileName = document.querySelector('#file-js .file-name');
     fileName.textContent = fileInput.files[0].name;
@@ -183,7 +212,8 @@ function like_ajax_post(id, j){
   var p = document.getElementById('like_p'+j).innerHTML;
   p = p.substring(6);
 
-  var xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest();http:
+  //10.12.100.72/Camagru/cameras
   xhr.open("GET", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
   xhr.onload = function(){
       var r = +p + +this.responseText;
@@ -198,15 +228,17 @@ function like_ajax_post(id, j){
     p = p.substring(6);
     var comment = document.getElementById('comment_text'+j).value;
     var params = "comment="+comment;
+
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_comment/"+id, true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.onload = function(){
-      if (this.responseText){
-        document.getElementById('comment_text'+j).value = "";
-        var r = +p + +1;
-        p0.innerHTML = "&nbsp" + r;
-      }
+      if (comment && comment.length < 55){
+          document.getElementById('comment_text'+j).value = "";
+          var r = +p + +1;
+          p0.innerHTML = "&nbsp" + r;
+      }else
+        alert('Plz enter a normal comment.');
     }
     xhr.send(params);
   }

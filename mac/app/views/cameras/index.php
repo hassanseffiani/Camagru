@@ -21,7 +21,6 @@
                             <div class="columns">
                                 <div class="column control">
                                     <div class="select is-primary">
-
                                         <select id="photo-filter" class="control" onchange="ch_filter();">
                                             <option value="" disabled selected></option>
                                             <option value="none">Normal</option>

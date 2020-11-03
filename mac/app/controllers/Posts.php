@@ -100,14 +100,15 @@
                     echo -1;
                 }
             }else
-                redirect('posts');
+                redirect('users/login');
         }
 
         //// Comments
 
         public function add_comment($id = 0){
             if (is_login_in()){
-                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    echo 1;
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $post = $this->postModel->getPostbyid($id);
                     $user = $this->userModel->getUserbyid($_SESSION['user_id']);
@@ -116,7 +117,7 @@
                     $data = [
                         'user' => $user,
                         'post' => $post,
-                        'comment' => trim($_POST['comment']),
+                        'comment' => htmlspecialchars(trim($_POST['comment'])),
                         'comment_err' => ''
                     ];
                     if (empty($data['comment']))
@@ -135,11 +136,9 @@
                             </html>";
                             if ($n->notify === "0")
                                 verify($userPost->email, $message);
-                            redirect('posts');
                         }
                     }
                 }
-                redirect('posts');
             }
             redirect('users/login');
         }
