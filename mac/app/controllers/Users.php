@@ -30,6 +30,8 @@
                         $data['email_err'] = 'Enter a valid email';
                     if (empty($data['name']))
                         $data['name_err'] = 'Enter a valid name';
+                    else if (strlen($data['name']) <= 2)
+                        $data['name_err'] = 'Enter a name have more than 3 caractere.';
                     else{
                         if ($this->userModel->Check_name($data['name']))
                             $data['name_err'] = 'Name is already token';
