@@ -3,7 +3,7 @@
         <div class="container">
             <h1 class="title is-1" style="color : #0074D9;"><?php echo $data['title']?></h1>
                 <?php if(is_login_in()) :?>
-                    <div class="columns is-mobile">
+                    <div class="columns">
                         <div class="column">
                             <div class="column">
                                 <a href="<?php echo URLROOT;?>posts" class="button is-link is-outlined has-text-left">
@@ -13,11 +13,11 @@
                                 <p class="containt">Back</p>
                                 </a>
                             </div>
-                        <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
-                            <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
-                        <?php $i++; } ?>
-                        <h1 class="title" id="title_filter">Choose a filter :</h1>
-                            <div class="columns is-mobile">
+                            <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
+                                <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
+                            <?php $i++; } ?>
+                            <h1 class="title" id="title_filter">Choose a filter :</h1>
+                            <div class="columns">
                                 <div class="column control">
                                     <div class="select is-primary">
                                         <select id="photo-filter" class="control" onchange="ch_filter();">

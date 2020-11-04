@@ -40,11 +40,5 @@
     height: 100%;
     overflow: scroll;
 }
-
-
-body.dark-theme {
-    color: #eee;
-    background: #121212;
-}
   
 /* select#photo-stickers option[value="nrml"]   { background-image:url("https://en.wikipedia.org/wiki/Joker_(The_Dark_Knight)#/media/File:HeathJoker.png");   } */
