@@ -17,7 +17,7 @@
                             <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
                         <?php $i++; } ?>
                         <h1 class="title" id="title_filter">Choose a filter :</h1>
-                            <div class="columns">
+                            <div class="columns is-mobile">
                                 <div class="column control">
                                     <div class="select is-primary">
                                         <select id="photo-filter" class="control" onchange="ch_filter();">
