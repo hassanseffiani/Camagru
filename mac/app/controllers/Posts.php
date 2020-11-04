@@ -9,8 +9,6 @@
         /// Index For all POST
 
         public function index($page = 0){
-            // $n = $this->userModel->notifyResult($_SESSION['user_id']);
-            // var_dump($n);
             $rpp = 5;
             isset($page) ? $page = $page : $page = 0;
             if ($page > 1)
@@ -160,7 +158,6 @@
             $like = $this->postModel->get_like_all($id);
             $post = $this->postModel->getPostbyid($id);
             $userPost = $this->postModel->getUserNamebyPostid($id);
-            // $user = $this->userModel->getUserbyid($_SESSION['user_id']);
             $comment = $this->postModel->get_comment($id);
             $data = [
                 'user' => $userPost,

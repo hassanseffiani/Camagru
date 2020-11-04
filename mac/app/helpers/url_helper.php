@@ -9,7 +9,9 @@
         else
             return FALSE;
       }
-      
+
+      // send mail
+
       function verify($to , $message){
         // In case any of our lines are larger than 70 characters, we should use wordwrap()
         $message = wordwrap($message, 70, "\r\n");

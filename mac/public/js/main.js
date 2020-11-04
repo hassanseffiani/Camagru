@@ -78,6 +78,7 @@ if (video){
     canvas.style.visibility = "hidden";
     canvas.style.position = "absolute";
     sticker64.value = canvas.toDataURL().substring(22);
+    filter_64.value = select_photo.value;
   }
 
   function changeSubImg($id){
@@ -106,16 +107,6 @@ if (video){
       alert("Please choose a stickers");
   }
 }
-
-// Dark mode
-//TO CONTINUE
-function setDark() {
-  const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-  // if (prefersDarkScheme)
-   const theme = document.body.classList.toggle("dark-theme");
-    document.cookie = "theme=" + theme;
-}
-
 //display input image
 
 function display(input) {
@@ -212,8 +203,7 @@ function like_ajax_post(id, j){
   var p = document.getElementById('like_p'+j).innerHTML;
   p = p.substring(6);
 
-  var xhr = new XMLHttpRequest();http:
-  //10.12.100.72/Camagru/cameras
+  var xhr = new XMLHttpRequest();
   xhr.open("GET", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
   xhr.onload = function(){
       var r = +p + +this.responseText;
@@ -253,13 +243,23 @@ function dlt_f_ajax(id, j){
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "http://10.12.100.72/Camagru/posts/delete_comment/"+id, true);
   xhr.onload = function(){
-      if (this.responseText != 1){
-        //delete elemet
+    //delete elemet
+    elem_dlt.parentNode.removeChild(elem_dlt);
+    //decrement nbr
+    var r = +p - +1;
+    p0.innerHTML = "&nbsp" + r;
+  }
+  xhr.send();
+}
+
+//delete image from galery
+
+function dlt_g_ajax(id, j){
+  var elem_dlt = document.getElementById("img_dlt"+j);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "http://10.12.100.72/Camagru/cameras/delete_preview/"+id, true);
+  xhr.onload = function(){
         elem_dlt.parentNode.removeChild(elem_dlt);
-        //decrement nbr
-        var r = +p - +1;
-        p0.innerHTML = "&nbsp" + r;
-      }
   }
   xhr.send();
 }

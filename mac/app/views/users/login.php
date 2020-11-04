@@ -8,7 +8,11 @@
         <form action="<?php echo URLROOT;?>users/login" method="post" class="box">
             <?php echo flash('register_success');?>
             <?php echo flash('send_N_mail');?>
-            <p class="help is-danger"><?= $data['verify_err'];?></p>
+            <p class="help is-danger"><?= $data['verify_err'];?>
+            <?php if (!empty($data['verify_err'])) {?>
+                <a class="button is-info is-small" href="<?php echo URLROOT ;?>users/send_N_email">Send New Email</a>
+            <?php } ?>
+            </p>
             <div class="field">
                 <label class="label">Username: <sup>*</sup></label>
                 <div class="control">

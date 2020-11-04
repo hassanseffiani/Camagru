@@ -1,5 +1,4 @@
 <?php
-    //two part to modify part sign in and login
     class Users extends Controller{
         public function __construct(){
             $this->userModel = $this->model('User');
@@ -37,8 +36,8 @@
                     }
                     if (empty($data['password']))
                         $data['password_err'] = 'Enter a valid password';
-                    // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['password']) == false)
-                    //     $data['password_err'] = 'Enter a valid password';
+                    else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['password']) == false)
+                        $data['password_err'] = 'Enter a valid password';
                     if (empty($data['confirm_password']))
                         $data['confirm_password_err'] = 'Please confirm password';
                     else{
@@ -67,7 +66,7 @@
                                 <a href='".URLROOT.'users/verify/'.$data['vkey']."'>Verify your account</a>
                             </body>
                             </html>";
-                            // verify($data['email'], $message);
+                            verify($data['email'], $message);
                             redirect('users/login');
                         }
                         else
@@ -219,7 +218,7 @@
                                 <p>
                                     Please click this link to change your passwrod account:
                                 </p>
-                                <a href='".URLROOT.'users/verify_forget/'.$data['vkey']."'>Verify your account</a>
+                                <a href='".URLROOT.'users/verify_forget/'.$data['vkey']."'>Cange your password</a>
                             </body>
                             </html>";
                         verify($data['email'], $message);
@@ -269,8 +268,8 @@
                 }
                 if (empty($data['new_p']))
                     $data['new_p_err'] = "Enter a valid password";
-                // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
-                    // $data['new_p_err'] = 'Enter a valid password';
+                else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
+                    $data['new_p_err'] = 'Enter a valid password';
                 else if ($data['new_p'] == $data['old_p'])
                     $data['new_p_err'] = "Enter another password";
                 if (empty($data['con_p']))
@@ -336,24 +335,22 @@
                         $data['Username_err'] = 'Username not found';
                     //verify
                     $verify = $this->userModel->Check_verify($data['Username']);
-                    if ((int)$verify->verify){
-                        $user_login = $this->userModel->login($data['Username'], $data['password']);
-                        if (empty($data['Username_err']) && empty($data['password_err'])){
-                            if ($user_login)
-                                $this->login_in($user_login);
-                            else{
-                                $data['password_err'] = 'Password incorrect';
-                                $this->view('users/login', $data);
-                            }
-                        }
-                        else
-                            $this->view('users/login', $data);
-                    }
-                    else{
-                        if ($name)
+                    $user_login = $this->userModel->login($data['Username'], $data['password']);
+                    if (empty($data['Username_err']) && empty($data['password_err'])){
+                        if (!(int)$verify->verify)
                             $data['verify_err'] = 'Please verify your account';
-                        $this->view('users/login', $data);
+                        if ($user_login)
+                            if (empty($data['verify_err']))
+                                $this->login_in($user_login);
+                        if ($user_login);
+                        else{
+                            $data['password_err'] = 'Password incorrect';
+                            $this->view('users/login', $data);
+                        }
                     }
+                    else
+                        $this->view('users/login', $data);
+                    $this->view('users/login', $data);
                 }else{
                     $data = [
                         'Username' => '',
@@ -386,7 +383,6 @@
                         'old_p_err' => '',
                         'notify' => $n->notify
                     ];
-                    //     $data['email'] = $info[1];
                         
                     if (empty($data['name']))
                         $data['name_err'] = "Enter a valid name";
@@ -453,8 +449,8 @@
                     }
                     if (empty($data['new_p']))
                         $data['new_p_err'] = "Enter a valid password";
-                    // else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
-                        // $data['new_p_err'] = 'Enter a valid password';
+                    else if (preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/" ,$data['new_p'],$match) == false)
+                        $data['new_p_err'] = 'Enter a valid password';
                     else if ($data['new_p'] == $data['old_p'])
                         $data['new_p_err'] = "Enter another password";
                     if (empty($data['con_p']))

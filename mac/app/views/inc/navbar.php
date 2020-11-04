@@ -19,7 +19,6 @@
       <?php endif;?>
     </div>
     <?php if(is_login_in()) :?>
-        <p class="button tag is-link is-light test" onclick="setDark();"> Dark Mode</p>
         <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">
             <p class="tag is-link is-light"> Welcome <?php echo $_SESSION['user_name']; ?></p>
