@@ -341,9 +341,12 @@
                     if (empty($data['Username_err']) && empty($data['password_err'])){
                         if (!(int)$verify->verify)
                             $data['verify_err'] = 'Please verify your account';
-                        if ($user_login)
-                            if (empty($data['verify_err']))
+                        if ($user_login){
+                            if (empty($data['verify_err'])){
                                 $this->login_in($user_login);
+                                redirect("posts");
+                            }
+                        }
                         if ($user_login);
                         else{
                             $data['password_err'] = 'Password incorrect';

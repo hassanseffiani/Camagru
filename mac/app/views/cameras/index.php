@@ -14,7 +14,7 @@
                                 </a>
                             </div>
                             <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
-                                <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
+                                <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changesubimg(<?= $i?>);"/>
                             <?php $i++; } ?>
                             <h1 class="title" id="title_filter">Choose a filter :</h1>
                             <div class="columns">

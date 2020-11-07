@@ -36,20 +36,24 @@ var video = document.getElementById('video'),
     imgWidth = 0,
     id,
     click = 0;
+    is_load = 0;
+    is_display = 0;
+    is_error = 0;
 
 if (video){
   var canvas = document.getElementById('canvas'),
   ctx = canvas.getContext('2d');
-  input.disabled = true;
-  take.disabled = true;
+  // input.disabled = true;
+  // take.disabled = true;
   getVideo();
 
   function getVideo() {
       navigator.mediaDevices.getUserMedia({ video: true })
-      .then(localMediaStream => {      
+      .then(localMediaStream => {
+      is_load = 1;
       video.srcObject = localMediaStream;
       video.play();
-      }).catch(err => console.error(err));
+      }).catch(err => console.log());
   }
 
   ///filter
@@ -81,7 +85,7 @@ if (video){
     filter_64.value = select_photo.value;
   }
 
-  function changeSubImg($id){
+  function changesubimg($id){
       id = $id;
       var img = document.getElementById($id);
       canvassize(img, 75, 75);
@@ -93,35 +97,54 @@ if (video){
   //take photo button
 
   function takephoto(){
-    if (click === 1){
-      if (input.files[0]){
-        var img = document.getElementById(id);
-        canvassize(img, imgWidth / 6.6, imgHeight / 5)
-      }else{
-        snap();
-        //input hidden
-        img64.value = canvas.toDataURL().substring(22);
-        filter_64.value = select_photo.value;
-      }
-    }else
-      alert("Please choose a stickers");
+    if (input.files[0]){
+      var img = document.getElementById(id);
+      if (click === 1)
+        canvassize(img, imgWidth / 6.6, imgHeight / 5);
+    }else{
+      if (click === 1){
+        if (is_load === 1){
+            snap();
+            //input hidden
+            img64.value = canvas.toDataURL().substring(22);
+            filter_64.value = select_photo.value;
+        }else
+          alert("Please choose a stickers 1");
+      }else
+        alert("Please choose a stickers 2");
+    }
   }
 }
 //display input image
 
+
 function display(input) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
-    reader.onload = function(event) {
-        var img = document.createElement('img');
-        img.setAttribute('id', "imgP");
-        img.setAttribute('src',event.target.result);
-        img.style.filter = select_photo.value;
-        photo.innerHTML = '';
-        photo.insertBefore(img, photo.firstChild);
-        input.filter = select_photo.value;
-    }
-    reader.readAsDataURL(input.files[0]);
+    // if (reader.result === null){
+      // is_display = 1;
+      reader.onload = function(event) {
+        // var i = ;
+        if (reader.result.search("image") > -1){
+          console.log(reader.result.search("image"));
+          // is_display = 1;
+          // is_error = 1;
+          var img = document.createElement('img');
+          img.setAttribute('id', "imgP");
+          img.setAttribute('src',event.target.result);
+          img.style.filter = select_photo.value;
+          photo.innerHTML = '';
+          photo.insertBefore(img, photo.firstChild);
+          input.filter = select_photo.value;
+        }
+        else
+          // is_error = 1;
+          //is_display = 1;
+          alert("Plz Choose a good file.");
+        // }
+      }
+      reader.readAsDataURL(input.files[0]);
+
    }
 }
 
@@ -137,10 +160,13 @@ if (input){
       };
       img.src = _URL.createObjectURL(file);
     }
-    if (click === 1)
+    // if (click === 1){
+      display(input);
       ch();
-    else
-      alert("Please choose a stickers");
+      take.disabled = false;
+    // }
+    // else
+      // alert("Please choose a stickers");
   });
 }
 
@@ -150,8 +176,10 @@ function ch(){
     const fileName = document.querySelector('#file-js .file-name');
     fileName.textContent = fileInput.files[0].name;
   }
-  display_vedio.style.display = "none";
-  display(input);
+  console.log(is_display);
+  console.log(is_error);
+  if (is_display === 1)
+    display_vedio.style.display = "none";
 }
 
 /// display like && comment
@@ -204,7 +232,7 @@ function like_ajax_post(id, j){
   p = p.substring(6);
 
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
+  xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
   xhr.onload = function(){
       var r = +p + +this.responseText;
       p0.innerHTML = "&nbsp" + r;
@@ -216,14 +244,14 @@ function like_ajax_post(id, j){
     var p0 = document.getElementById('comment_p'+j);
     var p = document.getElementById('comment_p'+j).innerHTML;
     p = p.substring(6);
-    var comment = document.getElementById('comment_text'+j).value;
+    var comment = document.getElementById('comment_text'+j).value.trim();
     var params = "comment="+comment;
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_comment/"+id, true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.onload = function(){
-      if (comment && comment.length < 55){
+      if (comment && comment.length < 100){
           document.getElementById('comment_text'+j).value = "";
           var r = +p + +1;
           p0.innerHTML = "&nbsp" + r;

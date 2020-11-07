@@ -48,65 +48,60 @@
         // dlt a post
 
         public function delete($id = 0){
-            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-                $post = $this->userModel->getUserbyid($id);
-                if ($post->user_id != $_SESSION['id'])
-                    redirect('posts');
-                if (is_login_in()){
-                    if ($this->postModel->deletePost($id)){
-                        dlt_img_path();
-                        redirect('posts');
+            if (is_login_in()){
+                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    $post = $this->userModel->getUserbyid($id);
+                    if ($post->user_id != $_SESSION['id'])
+                        redirect('users/login');
+                    if (is_login_in()){
+                        if ($this->postModel->deletePost($id)){
+                            dlt_img_path();
+                            redirect('posts');
+                        }
                     }
-                }else{
-                    flash('dlt_msg','You can\'t delete if you are not login.');
-                    redirect('posts');
-                }
+                }else
+                    redirect("posts");
             }else{
-                redirect('posts');
+                    flash('dlt_msg','You can\'t delete if you are not login.');
+                    redirect('users/login');
             }
         }
 
         //// likes
 
-        public function like($id){
-            $like = $this->postModel->get_like_all($id);
-            $post = $this->postModel->getPostbyid($id);
-            $user = $this->userModel->getUserbyid($_SESSION['user_id']);
-            $data = [
-                'user' => $user,
-                'post' => $post,
-                'like' => $like,
-            ];
-            $this->view('posts/like', $data);
-        }
-
         public function add_like($id = 0){
             if (is_login_in()){
-                $like = $this->postModel->get_like($id);
-                $post = $this->postModel->getPostbyid($id);
-                $user = $this->userModel->getUserbyid($_SESSION['user_id']);
-                $data = [
-                    'user' => $user,
-                    'post' => $post,
-                ];
-                if (!$like){
-                    $this->postModel->sql_like($data);
-                    echo 1;
-                }
-                else{
-                    $this->postModel->delete_like($data);
-                    echo -1;
-                }
-            }else
+                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                    $like = $this->postModel->get_like($id);
+                    $post = $this->postModel->getPostbyid($id);
+                    $user = $this->userModel->getUserbyid($_SESSION['user_id']);
+                    $data = [
+                        'user' => $user,
+                        'post' => $post,
+                    ];
+                    if (!$like){
+                        $this->postModel->sql_like($data);
+                        echo 1;
+                    }
+                    else{
+                        $this->postModel->delete_like($data);
+                        echo -1;
+                    }
+                }else
+                    redirect("posts");
+            }else{
+                flash('login','You can\'t like if you are not login.');
                 redirect('users/login');
+            }
         }
 
         //// Comments
 
         public function add_comment($id = 0){
             if (is_login_in()){
-                    echo 1;
-                    if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    // echo 1;
+                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $post = $this->postModel->getPostbyid($id);
                     $user = $this->userModel->getUserbyid($_SESSION['user_id']);
@@ -119,6 +114,8 @@
                         'comment_err' => ''
                     ];
                     if (empty($data['comment']))
+                        $data['comment_err'] = "Write something for this post.";
+                    else if (strlen($data["comment"]) >= 100)
                         $data['comment_err'] = "Write something for this post.";
                     if (empty($data['comment_err'])){
                         if ($this->postModel->sql_comment($data)){
@@ -136,18 +133,27 @@
                                 verify($userPost->email, $message);
                         }
                     }
-                }
+                }else
+                    redirect("posts");
+            }else{
+                flash('login','You can\'t comment if you are not login.');
+                redirect('users/login');
             }
-            redirect('users/login');
         }
 
         public function delete_comment($id = 0){
-            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-                $this->postModel->delete_comment_sql($id);
-                redirect('posts/like_comment/'.$_SESSION['post_id']);
-                $_SESSION['post_id'] = "";
+            if (is_login_in()){
+                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    $this->postModel->delete_comment_sql($id);
+                    redirect('posts/like_comment/'.$_SESSION['post_id']);
+                    $_SESSION['post_id'] = "";
+                    echo 1;
+                }else
+                    redirect("posts");
+            }else{
+                flash('login','You can\'t delete a comment if you are not login.');
+                redirect('users/login');
             }
-            redirect('posts');
         }
 
         // like comment

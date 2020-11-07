@@ -57,7 +57,7 @@
                             $this->view('cameras/index', $data);
                         }
 
-                        if (!empty(trim($_POST['img64']))){
+                        if (!empty($_POST['img64'])){
                             $b64 = merge_64(trim($_POST['img64']), trim($_POST['sticker64']));
                             $data1 = [
                                 'img_dir' => $b64,
@@ -67,8 +67,10 @@
                             $this->postModel->addPost($data);
                             redirect('cameras');
                         }
-                    }
-                    $this->view('cameras/index', $data);
+                        else
+                            redirect('cameras');
+                    }else
+                        $this->view('cameras/index', $data);
             }else
                 redirect('posts');
         }
@@ -76,11 +78,15 @@
         /// Delete preview
 
         public function delete_preview($id){
-            if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-                $this->postModel->deletePost($id);
-                dlt_img_path();
-                redirect('cameras');
+            if (is_login_in()){
+                if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    $this->postModel->deletePost($id);
+                    dlt_img_path();
+                }else
+                    redirect('cameras');
+            }else{
+                flash('login','You can\'t delete a preview if you are not login.');
+                redirect('users/login');
             }
-            redirect('cameras');
         }
     }

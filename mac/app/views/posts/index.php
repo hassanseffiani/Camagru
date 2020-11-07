@@ -15,7 +15,6 @@
       </div>
     </div>
     <h1 class="title is-4" style="color : #0074D9;"><?php echo flash('Post_mssg')?></h1>
-    <h1 class="title is-4" style="color : #0074D9;"><?php echo flash('dlt_msg')?></h1>
     <h1 class="title is-4" style="color : #0074D9;"><?php echo flash('msg_comm')?></h1>
     <?php $j = 0;?>
       <?php for($x = 1; $x <= $data['total_page']; $x++) echo "<a class='pagination-link' href='$x'>$x</a>"?>
