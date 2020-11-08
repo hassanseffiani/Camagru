@@ -5,7 +5,7 @@
       <h1 class="title is-1" style="color : #0074D9;"><?php echo $data['title']?></h1>
       <div class="column has-text-right">
         <?php if (is_login_in()) :?>
-          <a class="button is-link is-outlined"  href="<?php echo URLROOT;?>cameras/index">
+          <a class="button is-link is-outlined"  href="<?php echo URLROOT;?>cameras">
             <span class="icon">
               <i class="fi-plus small"></i>
             </span>

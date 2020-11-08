@@ -16,6 +16,7 @@
                         'img_err' => '',
                         'is_in' => 0,
                         'arr' => get_all_stickers(),
+                        'arr1' => get_all_emoji(),
                     ];
                     if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -25,10 +26,11 @@
                         $imageFileType = strtolower(pathinfo($name_file,PATHINFO_EXTENSION));
                         $tmp_name = $_FILES['file']['tmp_name'];
                         $upload_directory = APPROOT1; //This is the folder which you created just now
+                        chmod($upload_directory, 700);
                         if ($_FILES["file"]["size"] < 5 * 1048576){ //  1 * 1048576  == 1mb 
                             if (move_uploaded_file($tmp_name, $upload_directory.$name_file)){
                                 $sendjs = base64_encode(file_get_contents($upload_directory.$name_file));
-                                $b64 = merge_64($sendjs , trim($_POST['sticker64']));
+                                $b64 = merge_64($sendjs , trim($_POST['sticker64']), trim($_POST['sticker640']));
                                 $data1 = [
                                     'img_dir' => $b64,
                                     'type' => getimagesize($upload_directory.$name_file),
@@ -58,7 +60,7 @@
                         }
 
                         if (!empty($_POST['img64'])){
-                            $b64 = merge_64(trim($_POST['img64']), trim($_POST['sticker64']));
+                            $b64 = merge_64(trim($_POST['img64']), trim($_POST['sticker64']), trim($_POST['sticker640']));
                             $data1 = [
                                 'img_dir' => $b64,
                                 'filter' => trim($_POST['filter'])
@@ -72,7 +74,7 @@
                     }else
                         $this->view('cameras/index', $data);
             }else
-                redirect('posts');
+                redirect('users/login');
         }
 
         /// Delete preview

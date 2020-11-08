@@ -24,28 +24,35 @@ document.addEventListener('DOMContentLoaded', () => {
 var video = document.getElementById('video'),
     photo = document.getElementById('photo'),
     select_photo = document.getElementById("photo-filter"),
+    hidStickers = document.getElementById("hidStickers"),
     take = document.getElementById('take'),
     img64 = document.getElementById('img64'),
     sticker64 = document.getElementById('sticker64'),
+    sticker640 = document.getElementById('sticker640'),
     filter_64 = document.getElementById('filter'),
     input = document.getElementById('inpFile'),
     fileInput = document.querySelector('#file-js input[type=file]'),
     display_vedio = document.getElementById('display_vedio'),
     title_filter = document.getElementById('title_filter'),
+    sStickers = document.getElementById('sStickers'),
     imgHeight = 0,
     imgWidth = 0,
     id,
-    click = 0;
-    is_load = 0;
-    is_display = 0;
-    is_error = 0;
+    id0,
+    click = 0,
+    emoji = 0,
+    is_load = 0,
+    ip = location.host;
 
 if (video){
   var canvas = document.getElementById('canvas'),
   ctx = canvas.getContext('2d');
   // input.disabled = true;
-  // take.disabled = true;
+  take.disabled = true;
+  hidStickers.style.display = "none";
   getVideo();
+
+
 
   function getVideo() {
       navigator.mediaDevices.getUserMedia({ video: true })
@@ -75,23 +82,35 @@ if (video){
 
   //camera preview
 
-  function canvassize(img, w, h){
+  function canvassize(img, w, h, i){
     canvas.width = w;
     canvas.height = h;
     ctx.drawImage(img, 0, 0, w, h);
     canvas.style.visibility = "hidden";
     canvas.style.position = "absolute";
-    sticker64.value = canvas.toDataURL().substring(22);
+    if (i !== 1)
+      sticker64.value = canvas.toDataURL().substring(22);
+    else
+      sticker640.value = canvas.toDataURL().substring(22);
     filter_64.value = select_photo.value;
   }
 
   function changesubimg($id){
-      id = $id;
-      var img = document.getElementById($id);
-      canvassize(img, 75, 75);
-      click = 1;
-      input.disabled = false;
-      take.disabled = false;
+    id = $id;
+    var img = document.getElementById(id);
+    canvassize(img, 75, 75 , 0);
+    click = 1;
+    input.disabled = false;
+    take.disabled = false;
+  }
+
+  function changeEmojImg($id){
+    id0 = "0" + $id;
+    var img = document.getElementById(id0);
+    canvassize(img, 75, 75, 1);
+    emoji = 1;
+    input.disabled = false;
+    take.disabled = false;
   }
 
   //take photo button
@@ -99,8 +118,13 @@ if (video){
   function takephoto(){
     if (input.files[0]){
       var img = document.getElementById(id);
-      if (click === 1)
-        canvassize(img, imgWidth / 6.6, imgHeight / 5);
+      var img1 = document.getElementById(id0);
+      if (click === 1){
+        if (emoji === 1){
+          canvassize(img1, imgWidth / 6.6, imgHeight / 5, 1);
+        }
+        canvassize(img, imgWidth / 6.6, imgHeight / 5, 0);
+      }
     }else{
       if (click === 1){
         if (is_load === 1){
@@ -109,26 +133,23 @@ if (video){
             img64.value = canvas.toDataURL().substring(22);
             filter_64.value = select_photo.value;
         }else
-          alert("Please choose a stickers 1");
+          alert("Please choose a Big stickers");
       }else
-        alert("Please choose a stickers 2");
+        alert("Please choose a Big stickers");
     }
   }
 }
 //display input image
-
+function showStickers(){
+  hidStickers.style.display = "block";
+  sStickers.style.display = "none";
+}
 
 function display(input) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
-    // if (reader.result === null){
-      // is_display = 1;
       reader.onload = function(event) {
-        // var i = ;
-        if (reader.result.search("image") > -1){
-          console.log(reader.result.search("image"));
-          // is_display = 1;
-          // is_error = 1;
+        if (reader.result.search("image") > -1 && reader.result.search("video") === -1){
           var img = document.createElement('img');
           img.setAttribute('id', "imgP");
           img.setAttribute('src',event.target.result);
@@ -138,10 +159,7 @@ function display(input) {
           input.filter = select_photo.value;
         }
         else
-          // is_error = 1;
-          //is_display = 1;
           alert("Plz Choose a good file.");
-        // }
       }
       reader.readAsDataURL(input.files[0]);
 
@@ -160,13 +178,16 @@ if (input){
       };
       img.src = _URL.createObjectURL(file);
     }
-    // if (click === 1){
       display(input);
       ch();
       take.disabled = false;
-    // }
-    // else
-      // alert("Please choose a stickers");
+  });
+}
+
+//to delete a video holder;
+if (photo){
+  photo.addEventListener("click", () => {
+      display_vedio.style.display = "none";
   });
 }
 
@@ -176,10 +197,6 @@ function ch(){
     const fileName = document.querySelector('#file-js .file-name');
     fileName.textContent = fileInput.files[0].name;
   }
-  console.log(is_display);
-  console.log(is_error);
-  if (is_display === 1)
-    display_vedio.style.display = "none";
 }
 
 /// display like && comment
@@ -232,7 +249,7 @@ function like_ajax_post(id, j){
   p = p.substring(6);
 
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_like/"+id, true);
+  xhr.open("POST", "http://"+ip+"/Camagru/posts/add_like/"+id, true);
   xhr.onload = function(){
       var r = +p + +this.responseText;
       p0.innerHTML = "&nbsp" + r;
@@ -248,7 +265,7 @@ function like_ajax_post(id, j){
     var params = "comment="+comment;
 
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://10.12.100.72/Camagru/posts/add_comment/"+id, true);
+    xhr.open("POST", "http://"+ip+"/Camagru/posts/add_comment/"+id, true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.onload = function(){
       if (comment && comment.length < 100){
@@ -269,7 +286,7 @@ function dlt_f_ajax(id, j){
   p = p.substring(6);
   var elem_dlt = document.getElementById("elem_to_dlt"+j);
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "http://10.12.100.72/Camagru/posts/delete_comment/"+id, true);
+  xhr.open("POST", "http://"+ip+"/Camagru/posts/delete_comment/"+id, true);
   xhr.onload = function(){
     //delete elemet
     elem_dlt.parentNode.removeChild(elem_dlt);
@@ -285,7 +302,7 @@ function dlt_f_ajax(id, j){
 function dlt_g_ajax(id, j){
   var elem_dlt = document.getElementById("img_dlt"+j);
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "http://10.12.100.72/Camagru/cameras/delete_preview/"+id, true);
+  xhr.open("POST", "http://"+ip+"/Camagru/cameras/delete_preview/"+id, true);
   xhr.onload = function(){
         elem_dlt.parentNode.removeChild(elem_dlt);
   }

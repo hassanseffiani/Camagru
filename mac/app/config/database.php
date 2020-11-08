@@ -8,6 +8,7 @@
     define('APPROOT',dirname(dirname(__FILE__)));
     define('APPROOT1',dirname(dirname(dirname(__FILE__)))."/"."public/img/");
     define('APPROOT2',dirname(dirname(dirname(__FILE__)))."/"."public/stickers/");
+    define('APPROOT3',dirname(dirname(dirname(__FILE__)))."/"."public/emoji/");
     //urlroot
     define('URLROOT','http://10.12.100.72/Camagru/');
     //sitename
