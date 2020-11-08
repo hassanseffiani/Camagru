@@ -158,13 +158,4 @@
             $rows = $this->db->single();
             return $rows;
         }
-
-        // set setup
-
-        // public function model_setup(){
-        //     $this->db->query("CREATE DATABASE if not exists myDB");
-        //     $this->db->execute();
-        //     $this->db->query("CREATE TABLE Users(`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,`email` VARCHAR(255) NOT NULL)");
-        //     $this->db->execute();
-        // }
     }

@@ -2,13 +2,18 @@
     <div class="hero-body">
         <div class="container">
             <h1 class="title is-1" style="color : #0074D9;">Connect a User</h1>
+            <h1 class="title is-6" style="color : #0074D9;"><?= flash('login')?></h1>
+            <h1 class="title is-6" style="color : #0074D9;"><?= flash('register_success');?></h1>
+            <h1 class="title is-6" style="color : #0074D9;"><?= flash('send_N_mail');?></h1>
         </div>
     </div>
     <div class="columns is-centered">
         <form action="<?php echo URLROOT;?>users/login" method="post" class="box">
-            <?php echo flash('register_success');?>
-            <?php echo flash('send_N_mail');?>
-            <p class="help is-danger"><?= $data['verify_err'];?></p>
+            <p class="help is-danger"><?= $data['verify_err'];?>
+            <?php if (!empty($data['verify_err'])) {?>
+                <a class="button is-info is-small" href="<?php echo URLROOT ;?>users/send_N_email">Send New Email</a>
+            <?php } ?>
+            </p>
             <div class="field">
                 <label class="label">Username: <sup>*</sup></label>
                 <div class="control">

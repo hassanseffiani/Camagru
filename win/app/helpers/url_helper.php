@@ -9,7 +9,9 @@
         else
             return FALSE;
       }
-      
+
+      // send mail
+
       function verify($to , $message){
         // In case any of our lines are larger than 70 characters, we should use wordwrap()
         $message = wordwrap($message, 70, "\r\n");
@@ -28,10 +30,18 @@
         }
       }
 
-      //contunie to work with stickers next time
       function get_all_stickers(){
         $file = APPROOT2.'*';
-        $files = glob($file); //get all file names
+        $files = glob($file);
+        $arr = [];
+        foreach($files as $file)
+          array_push($arr, (base64_encode(file_get_contents($file))));
+        return ($arr);
+      }
+
+      function get_all_emoji(){
+        $file = APPROOT3.'*';
+        $files = glob($file);
         $arr = [];
         foreach($files as $file)
           array_push($arr, (base64_encode(file_get_contents($file))));
@@ -40,17 +50,28 @@
 
       //to merge and copy image with base 64
 
-      function merge_64($i1, $i2){
+      function merge_64($i1, $i2, $i3){
         $img1 = base64_decode($i1);
         $img2 = base64_decode($i2);
+        $img3 = base64_decode($i3);
+        list($width, $height) = getimgstring($img1);
         $img1 = imagecreatefromstring($img1);
         $img2 = imagecreatefromstring($img2);
+        $img3 = imagecreatefromstring($img3);
 
         // Copy and merge 
-        imagecopy($img1, $img2, 200, 150, 0, 0, 75, 75);
+        imagecopy($img1, $img3, 0, 0, 0, 0, $width / 6.6, $height / 5);
+        imagecopy($img1, $img2, $width / 2.5, $height / 2.5, 0, 0, $width / 6.6, $height / 5);
         ob_start();
         imagepng($img1);
         $bin = ob_get_clean();
         $b64 = base64_encode($bin);
         return $b64;
+      }
+
+
+      function getimgstring($data)
+      {
+         $uri = 'data://application/octet-stream;base64,'  . base64_encode($data);
+         return getimagesize($uri);
       }

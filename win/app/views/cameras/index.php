@@ -3,7 +3,7 @@
         <div class="container">
             <h1 class="title is-1" style="color : #0074D9;"><?php echo $data['title']?></h1>
                 <?php if(is_login_in()) :?>
-                    <div class="columns">
+                    <div class="columns is-mobile">
                         <div class="column">
                             <div class="column">
                                 <a href="<?php echo URLROOT;?>posts" class="button is-link is-outlined has-text-left">
@@ -13,15 +13,20 @@
                                 <p class="containt">Back</p>
                                 </a>
                             </div>
-                        <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
-                            <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changeSubImg(<?= $i?>);"/>
-                        <?php $i++; } ?>
-                        <h1 class="title" id="title_filter">Choose a filter :</h1>
-
+                            <?php $i = 0; foreach($data['arr'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
+                                <img id="<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="15%" onclick="changesubimg(<?= $i?>);"/>
+                            <?php $i++; } ?>
+                            <br>
+                            <button class="button is-link" id="sStickers" onclick="showStickers();">Show Stickers</button>
+                            <div id="hidStickers">
+                                <?php $i = 0; foreach($data['arr1'] as $arr) { if ($i === 2) {?> &emsp; <?php } ?> &nbsp;
+                                    <img id="0<?= $i?>" src="data:image/png;base64,<?= $arr?>" alt="image" width="9%" onclick="changeEmojImg(<?= $i?>);"/>
+                                <?php $i++; } ?>
+                            </div>
+                            <h1 class="title" id="title_filter">Choose a filter :</h1>
                             <div class="columns">
                                 <div class="column control">
                                     <div class="select is-primary">
-
                                         <select id="photo-filter" class="control" onchange="ch_filter();">
                                             <option value="" disabled selected></option>
                                             <option value="none">Normal</option>
@@ -44,9 +49,8 @@
                                 <div id="photo"></div>
                                 <input type="hidden" name="img64" id="img64">
                                 <input type="hidden" name="sticker64" id="sticker64" value="">
+                                <input type="hidden" name="sticker640" id="sticker640" value="">
                                 <input type="hidden" name="filter" id="filter">
-                            <!-- </form> -->
-                            <!-- <form action="<?php echo URLROOT;?>cameras/index" method="POST" enctype="multipart/form-data"> -->
                                 <div id="file-js" class="file">
                                     <label class="file-label">
                                         <input class="file-input" id="inpFile" type="file" name="file">
@@ -61,10 +65,8 @@
                                         <span class="file-name"></span>
                                     </label>
                                     <p class="help is-danger"><?= $data['img_err']?></p>
-                                <!-- <button class="button is-link is-outlined">submit</button> -->
                                 </div>
                                 <input class="button is-link" id="take" onclick="takephoto();" type="submit" value="Takephoto">
-                                <!-- <input type="hidden" name="filter1" id="filter1"> -->
                             </form>
                         </div>
                         <div class="column is-10">
@@ -78,19 +80,19 @@
                                     <div class="content" id="c_scroll">
                                         <table class="table is-fullwidth is-striped">
                                             <tbody>
-                                            <?php foreach($data['img'] as $img) {?>
+                                            <?php $j=0; foreach($data['img'] as $img) {?>
                                                 <tr>
-                                                    <form action="<?php echo URLROOT;?>cameras/delete_preview/<?php echo $img->id; ?>" method="post">
+                                                    <div id="img_dlt<?= $j;?>" class="column is-four-fifths">
                                                         <img src="data:<?php echo $img->type?>;base64,<?php echo $img->img?>" style="filter : <?php echo $img->filter?> ;" alt="image"/>
-                                                        <button class="button is-danger is-outlined">
+                                                        <button class="button is-danger is-outlined" onclick="dlt_g_ajax(<?= $img->id;?>, <?= $j;?>);">
                                                             <span class="icon is-small">
                                                                 <i class="fas fa-times"></i>
                                                             </span>
                                                         </button>
-                                                    </form>
-                                                    <br>
+                                                        <br>
+                                                    </div>
                                                 </tr>
-                                            <?php } ?>
+                                            <?php $j++;} ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -101,24 +103,4 @@
                 </div>
             </div>
         <?php endif ;?>
-        <script>
-            function dlt_f_ajax(id, j){
-                var p0 = document.getElementById('all_comment_p');
-                var p = p0.innerHTML;
-                p = p.substring(6);
-                var elem_dlt = document.getElementById("elem_to_dlt"+j);
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost/Camagru/posts/delete_comment/"+id, true);
-                xhr.onload = function(){
-                    if (this.responseText != 1){
-                        //delete elemet
-                        elem_dlt.parentNode.removeChild(elem_dlt);
-                        //decrement nbr
-                        var r = +p - +1;
-                        p0.innerHTML = "&nbsp" + r;
-                    }
-                }
-                xhr.send();
-                }
-        </script>
 <?php require APPROOT . "/views/inc/footer.php"; ?>

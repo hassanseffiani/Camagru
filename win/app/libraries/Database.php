@@ -11,6 +11,7 @@
         private $error;
         public function __construct(){
             $dsn = "mysql:host=$this->host; dbname=$this->dbname";
+            //check for connextion first attr second to prepare getMessage() function
             $option = array(
                 PDO::ATTR_PERSISTENT => true,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
@@ -26,8 +27,15 @@
         public function query($sql){
             $this->stmp = $this->pdo->prepare($sql);
         }
-        
+
+        //**************************************************** */
+        //**************************************************** */
+
+        /* 
+        function to use in our model
+        */
         public function bind($name, $value, $type = null){
+            // Check for type to bind with it.
             if (is_null($type)){
                 switch(true){
                     case is_int($value):
@@ -47,6 +55,8 @@
             $this->stmp->bindValue($name, $value, $type);
         }
 
+        
+
         public function execute(){
             return $this->stmp->execute();
         }
@@ -64,4 +74,7 @@
         public function rows(){
             return $this->stmp->rowCount();
         }
+        
+        //**************************************************** */
+        //**************************************************** */
     }

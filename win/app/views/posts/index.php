@@ -5,7 +5,7 @@
       <h1 class="title is-1" style="color : #0074D9;"><?php echo $data['title']?></h1>
       <div class="column has-text-right">
         <?php if (is_login_in()) :?>
-          <a class="button is-link is-outlined"  href="<?php echo URLROOT;?>cameras/index">
+          <a class="button is-link is-outlined"  href="<?php echo URLROOT;?>cameras">
             <span class="icon">
               <i class="fi-plus small"></i>
             </span>
@@ -15,7 +15,6 @@
       </div>
     </div>
     <h1 class="title is-4" style="color : #0074D9;"><?php echo flash('Post_mssg')?></h1>
-    <h1 class="title is-4" style="color : #0074D9;"><?php echo flash('dlt_msg')?></h1>
     <h1 class="title is-4" style="color : #0074D9;"><?php echo flash('msg_comm')?></h1>
     <?php $j = 0;?>
       <?php for($x = 1; $x <= $data['total_page']; $x++) echo "<a class='pagination-link' href='$x'>$x</a>"?>

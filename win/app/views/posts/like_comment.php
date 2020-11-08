@@ -75,11 +75,13 @@
                                                     <div class="media-content" id="list_5">
                                                         <p class="subtitle is-6 tag is-link is-light"><i class="fi-torso"></i><?php echo "&nbsp;".$list->user_name;?></p>
                                                         <p class="subtitle is-6 tag is-link is-outlined"><?php echo $list->comment;?></p>
-                                                        <button class="button is-small is-danger is-outlined" onclick="dlt_f_ajax(<?= $list->cmt_id;?>, <?= $j;?>);">
-                                                            <span class="icon is-small">
-                                                                <i class="fas fa-times"></i>
-                                                            </span>
-                                                        </button>
+                                                        <?php if(is_login_in()) :?>
+                                                            <button class="button is-small is-danger is-outlined" onclick="dlt_f_ajax(<?= $list->cmt_id;?>, <?= $j;?>);">
+                                                                <span class="icon is-small">
+                                                                    <i class="fas fa-times"></i>
+                                                                </span>
+                                                            </button>
+                                                        <?php endif;?>
                                                     </div>
                                                 </div>
                                             <?php $j++;?>
