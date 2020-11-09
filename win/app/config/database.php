@@ -1,7 +1,7 @@
 <?php
     //DB Params
-    $ip_server = $_SERVER['SERVER_NAME']; 
-    define('DB_HOST', $ip_server.':3307');
+    $ip_server = $_SERVER['SERVER_NAME'];
+    define('DB_HOST', 'localhost:3307');
     define('DB_USER', 'root');
     define('DB_PASS', 'root');
     define('DB_NAME', 'Camagru');

@@ -25,12 +25,12 @@
                     if (empty($data['email']))
                         $data['email_err'] = 'Enter a valid email';
                     else if ($this->userModel->Check_email($data['email']))
-                        $data['email_err'] = 'Email not found';
+                        $data['email_err'] = 'Email alredy token';
                     else if (preg_match("/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/" ,$data['email']) == false)
                         $data['email_err'] = 'Enter a valid email';
                     if (empty($data['name']))
                         $data['name_err'] = 'Enter a valid name';
-                    else if (strlen($data['name']) <= 2)
+                    else if (strlen($data['name']) <= 1)
                         $data['name_err'] = 'Enter a name have more than 3 caractere.';
                     else{
                         if ($this->userModel->Check_name($data['name']))

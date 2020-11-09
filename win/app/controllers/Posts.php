@@ -32,6 +32,8 @@
                 'rpp' => $rpp
             ];
             $post = $this->postModel->getPost($data1);
+            if (empty($post))
+                redirect("posts");
             foreach($post as $p)
                 $i++;
             $data = [
@@ -39,7 +41,6 @@
                 'name' => $_SESSION['user_name'],
                 'title' => 'Posts',
                 'post' => $post,
-                'i' => $i,
                 'total_page' => $totalPages
             ];
             $this->view('posts/index', $data);
@@ -147,7 +148,6 @@
                     $this->postModel->delete_comment_sql($id);
                     redirect('posts/like_comment/'.$_SESSION['post_id']);
                     $_SESSION['post_id'] = "";
-                    echo 1;
                 }else
                     redirect("posts");
             }else{
@@ -165,6 +165,9 @@
             $post = $this->postModel->getPostbyid($id);
             $userPost = $this->postModel->getUserNamebyPostid($id);
             $comment = $this->postModel->get_comment($id);
+            // var_dump("posts/like_comment/".$id);
+            if (empty($post))
+                redirect("posts/like_comment/".$_SESSION['post_id']);
             $data = [
                 'user' => $userPost,
                 'post' => $post,
