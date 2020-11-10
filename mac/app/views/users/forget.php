@@ -24,6 +24,7 @@
                 </div>
             <input class="button is-primary" type="submit" name="submit" value="Edit"><a class="button" id="hidden">asdasdasdaasdas</a>
             </div>
+            <input type="hidden" name="token" id="token" value="<?= $data['token']; ?>" />
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

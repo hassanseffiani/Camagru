@@ -17,6 +17,7 @@
             <div class="buttons column is-half">
             <input class="button is-primary" type="submit" name="submit" value="Send">
             </div>
+            <input type="hidden" name="token" id="token" value="<?= $data['token']; ?>" />
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

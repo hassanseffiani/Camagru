@@ -38,6 +38,7 @@
                 <input class="button is-primary" type="submit" name="submit" value="Register">
                 <p>You have an account? <a class="button is-info" href="<?php echo URLROOT;?>users/login">Login</a></p>
             </div>
+            <input type="hidden" name="token" id="token" value="<?= $data['token']; ?>" />
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

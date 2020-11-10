@@ -38,6 +38,7 @@
             <div class="buttons column is-center">
                 <input class="button is-primary" type="submit" name="submit" value="Edit password">&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a class="tag is-link is-light" href="<?php echo URLROOT ;?>users/edit">Change profil ?</a>
             </div>
+            <input type="hidden" name="token" id="token" value="<?= $token; ?>" />
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>
