@@ -20,57 +20,61 @@
                     ];
                     if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                        if (isset($_FILES['file']))
-                            $data['is_in'] = 1;
-                        $name_file = $_FILES['file']['name'];
-                        $imageFileType = strtolower(pathinfo($name_file,PATHINFO_EXTENSION));
-                        $tmp_name = $_FILES['file']['tmp_name'];
-                        $upload_directory = APPROOT1; //This is the folder which you created just now
-                        chmod($upload_directory, 700);
-                        if ($_FILES["file"]["size"] < 5 * 1048576){ //  1 * 1048576  == 1mb 
-                            if (move_uploaded_file($tmp_name, $upload_directory.$name_file)){
-                                $sendjs = base64_encode(file_get_contents($upload_directory.$name_file));
-                                $b64 = merge_64($sendjs , trim($_POST['sticker64']), trim($_POST['sticker640']));
-                                $data1 = [
-                                    'img_dir' => $b64,
-                                    'type' => getimagesize($upload_directory.$name_file),
-                                    'filter' => trim($_POST['filter']),
-                                    'sendjs' => $sendjs
-                                ];
-                                if ($data1['type'] !== false){
-                                    if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "gif"){
-                                            $data = array_merge($data, $data1);
-                                            if ($this->postModel->addPost($data))
-                                                redirect('cameras');
-                                    }
-                                    else{
-                                        $data['img_err'] = 'Sorry, there was an error uploading your file. type error.';
-                                        $this->view('cameras/index', $data);
+                        if (isset($_SESSION['token']) AND isset($_POST['token']) AND !empty($_SESSION['token']) AND !empty($_POST['token'])) {
+                            if ($_SESSION['token'] == $_POST['token']) {
+                                if (isset($_FILES['file']))
+                                    $data['is_in'] = 1;
+                                $name_file = $_FILES['file']['name'];
+                                $imageFileType = strtolower(pathinfo($name_file,PATHINFO_EXTENSION));
+                                $tmp_name = $_FILES['file']['tmp_name'];
+                                $upload_directory = APPROOT1; //This is the folder which you created just now
+                                if ($_FILES["file"]["size"] < 5 * 1048576){ //  1 * 1048576  == 1mb 
+                                    if (move_uploaded_file($tmp_name, $upload_directory.$name_file)){
+                                        $sendjs = base64_encode(file_get_contents($upload_directory.$name_file));
+                                        $b64 = merge_64($sendjs , trim($_POST['sticker64']), trim($_POST['sticker640']));
+                                        $data1 = [
+                                            'img_dir' => $b64,
+                                            'type' => getimagesize($upload_directory.$name_file),
+                                            'filter' => trim($_POST['filter']),
+                                            'sendjs' => $sendjs
+                                        ];
+                                        if ($data1['type'] !== false){
+                                            if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "gif"){
+                                                    $data = array_merge($data, $data1);
+                                                    if ($this->postModel->addPost($data))
+                                                        redirect('cameras');
+                                            }
+                                            else{
+                                                $data['img_err'] = 'Sorry, there was an error uploading your file. type error.';
+                                                $this->view('cameras/index', $data);
+                                            }
+                                        }
+                                        else{
+                                            $data['img_err'] = 'Sorry, there was an error uploading your file.';
+                                            $this->view('cameras/index', $data);
+                                        }
                                     }
                                 }
                                 else{
-                                    $data['img_err'] = 'Sorry, there was an error uploading your file.';
+                                    $data['img_err'] = 'Sorry, there was an error uploading your file. Size error.';
                                     $this->view('cameras/index', $data);
                                 }
-                            }
-                        }
-                        else{
-                            $data['img_err'] = 'Sorry, there was an error uploading your file. Size error.';
-                            $this->view('cameras/index', $data);
-                        }
 
-                        if (!empty($_POST['img64'])){
-                            $b64 = merge_64(trim($_POST['img64']), trim($_POST['sticker64']), trim($_POST['sticker640']));
-                            $data1 = [
-                                'img_dir' => $b64,
-                                'filter' => trim($_POST['filter'])
-                            ];
-                            $data = array_merge($data, $data1);
-                            $this->postModel->addPost($data);
-                            redirect('cameras');
-                        }
-                        else
-                            redirect('cameras');
+                                if (!empty($_POST['img64'])){
+                                    $b64 = merge_64(trim($_POST['img64']), trim($_POST['sticker64']), trim($_POST['sticker640']));
+                                    $data1 = [
+                                        'img_dir' => $b64,
+                                        'filter' => trim($_POST['filter'])
+                                    ];
+                                    $data = array_merge($data, $data1);
+                                    $this->postModel->addPost($data);
+                                    redirect('cameras');
+                                }else
+                                    redirect('cameras');
+                            }else
+                                $this->view('cameras/index', $data);
+                        }else
+                            $this->view('cameras/index', $data);
                     }else
                         $this->view('cameras/index', $data);
             }else

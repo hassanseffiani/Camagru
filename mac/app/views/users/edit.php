@@ -1,4 +1,4 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require APPROOT . '/views/inc/header.php'; token();?>
 <div class="hero-body">
         <div class="container">
             <h1 class="title is-1" style="color : #0074D9;">Edit a User</h1>
@@ -47,7 +47,7 @@
             <div class="buttons column is-center">
                 <input class="button is-primary" type="submit" name="submit" value="Edit All">&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;<a class="tag is-link is-light" href="<?php echo URLROOT ;?>users/edit_pass">Change password ?</a>
             </div>
-            <input type="hidden" name="token" id="token" value="<?= $token; ?>" />
+            <input type="hidden" name="token" id="token" value="<?= $_SESSION['token']; ?>" />
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

@@ -8,8 +8,6 @@
 
         public function index(){
             if (!is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $vkey = md5(time(). trim($_POST['email']));
@@ -19,7 +17,6 @@
                         'password' => htmlspecialchars(trim($_POST['password'])),
                         'confirm_password' => htmlspecialchars(trim($_POST['confirm_password'])),
                         'vkey' => $vkey,
-                        'token' => $_SESSION['token'],
                         'name_err' => '',
                         'email_err' => '',
                         'password_err' => '',
@@ -108,19 +105,14 @@
                 redirect('posts');
         }
 
-        //to verify account just created
-        // modify verify
         // push // complet csrf // .... test .... test....
         public function verify($vkey = 0){
             if (!is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if (empty($vkey))
                     redirect('posts');
                 $info = $this->userModel->getUserTime($vkey);
                 $data = [
                     'vkey' => $vkey,
-                    'token' => $_SESSION['token'],
                     'vkey_err' => '',
                     'now' => date("Y-m-d H:i:s"),
                     'time' => $info->time
@@ -137,27 +129,30 @@
                     if (empty($data['vkey']))
                         $data['vkey_err'] = "NOT GOOD";
                     if (!$this->userModel->already_verify($vkey)){
-                        if (empty($data['vkey_err'])){
-                            if ($hh == null){
-                                if ($min <= 5){
-                                    if ($this->userModel->verify_account($data['vkey'])){
-                                        // flash('register_success', 'You are registered and can log in');
-                                        // redirect('users/login');
+                        if (isset($_SESSION['token']) AND isset($_POST['token']) AND !empty($_SESSION['token']) AND !empty($_POST['token'])) {
+                            if ($_SESSION['token'] == $_POST['token']) {
+                                if ($hh == null){
+                                    if ($min <= 5){
+                                        if ($this->userModel->verify_account($data['vkey'])){
+                                            flash('register_success', 'You are registered and can log in');
+                                            redirect('users/login');
+                                        }
+                                    }else{
+                                        flash('verify_failed', 'You have expire time to verify your account. Please send a new email');
+                                        $this->view('users/send_N_email', $data);
                                     }
                                 }else{
-                                    flash('verify_failed', 'You have expire time to verify your account. Please send a new email');
+                                    flash('verify_failed', 'You have expire time to verify your account');
                                     $this->view('users/send_N_email', $data);
                                 }
-                            }else{
-                                flash('verify_failed', 'You have expire time to verify your account');
-                                $this->view('users/send_N_email', $data);
-                            }
-                        }
+                            }else
+                                $this->view('users/verify', $data);
+                        }else
+                            $this->view('users/verify', $data);
                     }else{
                         flash('register_success', 'You have already verify ur account');
                         redirect('users/login');
-                    }
-                    
+                    }                    
                 }else
                     $this->view('users/verify', $data);
             }else
@@ -168,15 +163,12 @@
 
         public function send_N_email(){
             if (!is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $vkey = $this->userModel->Get_vkey(htmlspecialchars(trim($_POST['email'])));
                     $data = [
                         'email' => htmlspecialchars(trim($_POST['email'])),
                         'vkey' => $vkey->vkey,
-                        'token' => $_SESSION['token'],
                         'email_err' => ''
                     ];
                     if (empty($data['email']))
@@ -195,22 +187,19 @@
                                         </head>
                                         <body>
                                             <p>
-                                                Thanks for signing up!
-                                                Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
-                                            
                                                 Please click this link to activate your account:
                                             </p>
                                             <a href='".URLROOT.'users/verify/'.$data['vkey']."'>Verify your account</a>
                                         </body>
                                         </html>";
-                                    // verify($data['email'], $message);
+                                    verify($data['email'], $message);
                                     flash('send_N_mail', 'Check your inbox for the new verification');
                                     redirect('users/login');
                                 }
                             }else
                                 $this->view('users/send_N_email', $data);
-                    }else
-                        $this->view('users/send_N_email', $data);
+                        }else
+                            $this->view('users/send_N_email', $data);
                     }else
                         $this->view('users/send_N_email', $data);
                 }else{
@@ -230,15 +219,12 @@
 
         public function forget(){
             if (!is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $vkey = $this->userModel->Get_vkey(htmlspecialchars(trim($_POST['email'])));
                     $data = [
                         'email' => htmlspecialchars(trim($_POST['email'])),
                         'vkey' => $vkey->vkey,
-                        'token' => $_SESSION['token'],
                         'email_err' => ''
                     ];
                     if (empty($data['email']))
@@ -260,7 +246,7 @@
                                             <p>
                                                 Please click this link to change your passwrod account:
                                             </p>
-                                            <a href='".URLROOT.'users/verify_forget/'.$data['vkey']."'>Cange your password</a>
+                                            <a href='".URLROOT.'users/verify_forget/'.$data['vkey']."'>Change your password</a>
                                         </body>
                                         </html>";
                                     verify($data['email'], $message);
@@ -283,8 +269,6 @@
 
         public function verify_forget($vkey = 0){
             if (!is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if (empty($vkey))
                     redirect('posts');
                 $info = $this->userModel->getUserTime($vkey);
@@ -306,7 +290,6 @@
                         'old_p' => htmlspecialchars(trim($_POST['old_p'])),
                         'new_p' => htmlspecialchars(trim($_POST['new_p'])),
                         'con_p' => htmlspecialchars(trim($_POST['con_p'])),
-                        'token' => $_SESSION['token'],
                         'vkey_err' => '',
                         'old_p_err' => '',
                         'new_p_err' => '',
@@ -375,14 +358,11 @@
 
         public function login(){
             if (!is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $data = [
                         'Username' => htmlspecialchars(trim($_POST['email'])),
                         'password' => htmlspecialchars(trim($_POST['password'])),
-                        'token' => $_SESSION['token'],
                         'Username_err' => '',
                         'password_err' => '',
                         'verify_err' => '',
@@ -440,8 +420,6 @@
 
         public function edit(){
             if (is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 $info = $this->userModel->getUserbyinfo($_SESSION['user_id']);
                 $n = $this->userModel->notifyResult($_SESSION['user_id']);
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -451,7 +429,6 @@
                         'name' => htmlspecialchars(trim($_POST['name'])),
                         'email' => htmlspecialchars(trim($_POST['email'])),
                         'old_p' => htmlspecialchars(trim($_POST['old_p'])),
-                        'token' => $_SESSION['token'],
                         'name_err' => '',
                         'email_err' => '',
                         'old_p_err' => '',
@@ -518,8 +495,6 @@
         
         public function edit_pass(){
             if (is_login_in()){
-                $token = bin2hex(random_bytes(32));
-                $_SESSION['token'] = $token;
                 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
                     $data = [
@@ -527,7 +502,6 @@
                         'old_p' => htmlspecialchars(trim($_POST['old_p'])),
                         'new_p' => htmlspecialchars(trim($_POST['new_p'])),
                         'con_p' => htmlspecialchars(trim($_POST['con_p'])),
-                        'token' => $_SESSION['token'],
                         'old_p_err' => '',
                         'new_p_err' => '',
                         'con_p_err' => '',

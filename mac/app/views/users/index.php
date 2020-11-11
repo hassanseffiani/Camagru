@@ -1,4 +1,4 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require APPROOT . '/views/inc/header.php'; token();?>
     <div class="hero-body">
         <div class="container">
             <h1 class="title is-1" style="color : #0074D9;">Create a User</h1>
@@ -38,7 +38,7 @@
                 <input class="button is-primary" type="submit" name="submit" value="Register">
                 <p>You have an account? <a class="button is-info" href="<?php echo URLROOT;?>users/login">Login</a></p>
             </div>
-            <input type="hidden" name="token" id="token" value="<?= $data['token']; ?>" />
+            <input type="hidden" name="token" id="token" value="<?= $_SESSION['token']; ?>" />
         </form>
     </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

@@ -1,4 +1,4 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require APPROOT . '/views/inc/header.php'; token();?>
     <div class="hero-body">
         <div class="container">
             <a href="<?php echo URLROOT;?>posts" class="button is-link is-outlined has-text-left">
@@ -105,6 +105,7 @@
                                         <i class="fas fa-times"></i>
                                     </span>
                                     </button>
+                                <input type="hidden" name="token" id="token" value="<?= $_SESSION['token']; ?>" />
                             </form>
                         </div>
                     </div>

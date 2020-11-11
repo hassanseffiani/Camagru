@@ -47,7 +47,6 @@ var video = document.getElementById('video'),
 if (video){
   var canvas = document.getElementById('canvas'),
   ctx = canvas.getContext('2d');
-  // input.disabled = true;
   take.disabled = true;
   hidStickers.style.display = "none";
   getVideo();
@@ -133,7 +132,7 @@ if (video){
             img64.value = canvas.toDataURL().substring(22);
             filter_64.value = select_photo.value;
         }else
-          alert("Please choose a Big stickers");
+          alert("You need a camera , plz choose a file to upload.");
       }else
         alert("Please choose a Big stickers");
     }

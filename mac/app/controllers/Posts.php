@@ -55,13 +55,21 @@
                     if ($post->user_id != $_SESSION['id'])
                         redirect('users/login');
                     if (is_login_in()){
-                        if ($this->postModel->deletePost($id)){
-                            dlt_img_path();
-                            redirect('posts');
+                        if (isset($_SESSION['token']) AND isset($_POST['token']) AND !empty($_SESSION['token']) AND !empty($_POST['token'])) {
+                            if ($_SESSION['token'] == $_POST['token']) {
+                                if ($this->postModel->deletePost($id)){
+                                    dlt_img_path();
+                                    redirect('posts');
+                                }
+                            }
+                            else
+                                redirect("posts/like_comment/".$id);
                         }
-                    }
+                        else
+                            redirect("posts/like_comment/".$id);
+                }
                 }else
-                    redirect("posts");
+                    redirect("posts/like_comment/".$id);
             }else{
                     flash('dlt_msg','You can\'t delete if you are not login.');
                     redirect('users/login');
@@ -165,7 +173,6 @@
             $post = $this->postModel->getPostbyid($id);
             $userPost = $this->postModel->getUserNamebyPostid($id);
             $comment = $this->postModel->get_comment($id);
-            // var_dump("posts/like_comment/".$id);
             if (empty($post))
                 redirect("posts/like_comment/".$_SESSION['post_id']);
             $data = [

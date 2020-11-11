@@ -67,6 +67,7 @@
                                     <p class="help is-danger"><?= $data['img_err']?></p>
                                 </div>
                                 <input class="button is-link" id="take" onclick="takephoto();" type="submit" value="Takephoto">
+                                <input type="hidden" name="token" id="token" value="<?= $_SESSION['token']; ?>" />
                             </form>
                         </div>
                         <div class="column is-10">

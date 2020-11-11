@@ -1,4 +1,4 @@
-<?php require APPROOT . "/views/inc/header.php"; ?>
+<?php require APPROOT . '/views/inc/header.php'; token();?>
 <div class="hero-body">
   <div class="container">
     <div class="column has-text-left">
