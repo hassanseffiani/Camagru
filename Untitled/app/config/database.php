@@ -1,7 +1,7 @@
 <?php
     //DB Params
     define('DB_HOST', 'localhost:3306');
-    define('DB_USER', 'hassan');
+    define('DB_USER', 'hsf');
     define('DB_PASS', 'hsf');
     define('DB_NAME', 'Camagru');
 
